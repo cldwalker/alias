@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/alias_creator
+lib/alias_creator.rb
+test/test_alias_creator.rb
