@@ -1,5 +1,5 @@
 # require "lib/forwardable"
-require 'lib/object'
+require 'lib/core_extensions'
 require "singleton"
 require "yaml"
 
