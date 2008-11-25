@@ -1,0 +1,10 @@
+constant:
+    Object: O
+  
+klass:
+    Object:
+      const_get: cg
+
+instance:
+    String:
+        to_s: ts

@@ -1,5 +1,7 @@
-require "g/forwardable"
-require "g/sensitivehash"
+# require "lib/forwardable"
+require 'lib/object'
+require "singleton"
+require "yaml"
 
 # Creates four types of aliases: instance, command, object,and constant.
 # All aliases for each type are stored in their respective accessors.
@@ -19,17 +21,47 @@ require "g/sensitivehash"
 #     'Class2'=>{:method21=>:m21}
 #   }
 #
-module AliasCreator
-	def initialize_aliases #:nodoc:
+class AliasCreator
+  include Singleton
+  
+  class<<self    
+    def load_config_file(file)
+      if file.nil?
+        if Object.const_defined?("RAILS_ROOT") && File.exists?("config/aliases.yml")
+          file = "config/aliases.yml"
+        elsif File.exists?("aliases.yml")
+          file = "aliases.yml"
+        end
+      end
+      YAML::load(File.read(file))
+    end
+  
+    def setup(options={})
+      config_hash = load_config_file(options[:file])
+      config_hash.each do |k,v|
+        self.instance.load_alias_type(k, v)
+      end
+      self.instance
+    end  
+  end
+  
+  def load_alias_type(alias_type, aliases_hash)
+    case alias_type
+    when 'klass'
+      create_klass_aliases(aliases_hash)
+    when 'constant'
+      create_constant_aliases(aliases_hash)
+    when 'instance'
+      create_instance_aliases(aliases_hash)
+    end
+  end
+    
+	def initialize #:nodoc:
 		@klass_aliases = {}; @instance_aliases = {}; @constant_aliases = {}; @object_aliases = {}
+  	@alias_types = [:object, :klass, :instance, :constant]
 	end
 
-	attr_accessor :klass_aliases, :instance_aliases,:constant_aliases, :object_aliases
-	@@alias_types = [:object, :klass, :instance, :constant]
-
-  def alias_types
-    @@alias_types
-  end
+	attr_accessor :klass_aliases, :instance_aliases,:constant_aliases, :object_aliases, :alias_types
   
 	def create_klass_aliases(klass_aliases)
 		@klass_aliases.merge! create_aliases(klass_aliases, :klass_alias=>true,:verbose=>true)
@@ -55,38 +87,17 @@ module AliasCreator
 		@constant_aliases.merge! constant_aliases
 	end
 
-	def create_object_aliases(cmd_aliases,object)
-		cmd_aliases ||= {}
-		#w: currently keeps track of all object methods that are aliased
-		clean_invalid_klass_keys(cmd_aliases)
-		#no validation until invalid_klasses key option
-		import_methods_to_object(object,cmd_aliases, :validate=>false)
-		@object_aliases.merge! cmd_aliases
-	end
+  #TODO
+  # def create_object_aliases(cmd_aliases,object)
+  #   cmd_aliases ||= {}
+  #   #w: currently keeps track of all object methods that are aliased
+  #   clean_invalid_klass_keys(cmd_aliases)
+  #   #no validation until invalid_klasses key option
+  #   import_methods_to_object(object,cmd_aliases, :validate=>false)
+  #   @object_aliases.merge! cmd_aliases
+  # end
 
 	##query methods
-
-	#used by RShell::Command
-	def make_searchable_hash(type) # :nodoc:
-		make_name_alias_hash_by_alias_type(type)
-	end
-
-	# Searches for a method's alias (method is a symbol).
-	# Options are:
-	# * :type : Alias type to search under. Alias types are as stated above: constant, instance, klass and object. 
-	#    If no alias type is specified, all alias types are searched.
-	def findAliases(method_name,options={})
-		searchable_hash = make_searchable_hash_with_default_all(options)
-		searchable_hash[method_name]
-	end
-
-	# Searches for a method name by its alias (alias is a symbol).
-	# Options are:
-	# * :type : Alias type to search under. Alias types are as stated above: constant, instance, klass and object. If no alias type is specified, all alias types are searched.
-	def find_method_by_alias(alias_name,options={})
-		searchable_hash = make_searchable_hash_with_default_all(options).invert
-		searchable_hash[alias_name]
-	end
 
 	def make_shortest_aliases(unaliased_strings,options={})
 		options = {:constant=>true}.update(options)
@@ -117,42 +128,40 @@ module AliasCreator
 	end
 	
 	private
+	
+	def create_aliases(aliases,options={})
+		aliases ||= {}
+		aliases.each { |k,alias_hash|
+			klass = Object.any_const_get(k)
+			if klass
+				eval_string = ""
+				alias_hash.each {|original_method, alias_methods|
+					alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
 
-	def make_searchable_hash_with_default_all(options={})
-		if options[:type]
-			if @@alias_types.include?(options[:type])
-				searchable_hash = make_name_alias_hash_by_alias_type(options[:type])
+					if ((options[:klass_alias] && ! klass.respond_to?(original_method)) ||
+						( ! options[:klass_alias] && ! klass.method_defined?(original_method)) )
+						puts "#{klass}: method '#{original_method}' not found and thus not aliased" if options[:verbose]
+						next
+					end
+
+					alias_methods.each { |a|
+						eval_string += "alias_method :#{a}, :#{original_method}\n"
+					}
+				}
+				if options[:klass_alias]
+					eval_string = "class <<self\n #{eval_string}\nend"
+				end
+				klass.class_eval eval_string
 			else
-				raise "invalid alias type '#{options[:type]}' given "
+				puts "Class #{k} not found and no aliases created" #if options[:verbose]
 			end
 
-		else
-			searchable_hash = {}
-			@@alias_types.each {|e|
-				temp_hash = make_name_alias_hash_by_alias_type(e)
-				searchable_hash.merge!(temp_hash)
-			}
-		end
-		searchable_hash
+		}
 	end
+	
 
-
-	def make_name_alias_hash(hash)
-		name_alias_hash = SensitiveHash.new
-		hash.values.each {|e| name_alias_hash.merge(e) }
-		name_alias_hash
-	end
-
-	def make_name_alias_hash_by_alias_type(type)
-		if type.to_s == 'constant'
-			searchable_hash = @constant_aliases
-		else
-			searchable_hash = eval "make_name_alias_hash(@#{type}_aliases) "
-		end
-		searchable_hash
-	end
 end
 
-class AliasCreatorI
-	extend AliasCreator
-end
+# class AliasCreatorI
+#   extend AliasCreator
+# end

@@ -1,38 +1,8 @@
 #Creates instance, command and klass aliases. Some of the aliasing is based on forwardable.rb.
 require 'forwardable'
-require 'g/object'
-require 'g/array'
+# require 'g/array'
 
 class Object #:nodoc:
-	def create_aliases(aliases,options={})
-		aliases ||= {}
-		aliases.each { |k,alias_hash|
-			klass = Object.any_const_get(k)
-			if klass
-				eval_string = ""
-				alias_hash.each {|original_method, alias_methods|
-					alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
-
-					if ((options[:klass_alias] && ! klass.respond_to?(original_method)) ||
-						( ! options[:klass_alias] && ! klass.method_defined?(original_method)) )
-						puts "#{klass}: method '#{original_method}' not found and thus not aliased" if options[:verbose]
-						next
-					end
-
-					alias_methods.each { |a|
-						eval_string += "alias_method :#{a}, :#{original_method}\n"
-					}
-				}
-				if options[:klass_alias]
-					eval_string = "class <<self\n #{eval_string}\nend"
-				end
-				klass.class_eval eval_string
-			else
-				puts "Class #{k} not found and no aliases created" #if options[:verbose]
-			end
-
-		}
-	end
 
   #?:not sure if this is used
 	def import_method_to_class(method,export_class,import_class=Object)
