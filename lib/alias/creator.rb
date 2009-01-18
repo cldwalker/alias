@@ -26,7 +26,16 @@ module Alias
   	end
 
   	attr_accessor :klass_aliases, :instance_aliases,:constant_aliases, :object_aliases, :alias_types
-
+    
+    def factory_create_aliases(alias_type, aliases_hash)
+      creator_class_string = "Alias::#{alias_type.capitalize}Creator"
+      if creator_class = Object.any_const_get(creator_class_string)
+        creator_class.create(aliases_hash, aliases_hash.slice_off!('auto_alias').merge('verbose'=>true))
+      else
+        puts "Creator class '#{creator_class_string}' not found." if @verbose
+      end
+    end
+    
     def create_aliases_for_type(alias_type, aliases_hash)
       case alias_type
       when 'klass'
@@ -38,30 +47,21 @@ module Alias
       end
     end
     
-  	def create_klass_aliases(klass_aliases)
-  		@klass_aliases.merge! create_aliases(klass_aliases, :klass_alias=>true,:verbose=>@verbose)
+  	def create_klass_aliases(aliases_hash)
+  		creator_obj = factory_create_aliases('klass', aliases_hash)
+      @klass_aliases.merge! creator_obj.alias_map
   	end
 
-  	def create_instance_aliases(instance_aliases)
-  		@instance_aliases.merge! create_aliases(instance_aliases,:verbose=>@verbose)
+  	def create_instance_aliases(aliases_hash)
+  		creator_obj = factory_create_aliases('instance', aliases_hash)
+  		@instance_aliases.merge! creator_obj.alias_map
   	end
 
-  	# Options are:
-  	# * :auto_alias : Array of constants to alias by shortest available constant. For example,
-  	#   if the constant A already exists, then Aardvark would be aliased to Aa.
-  	def create_constant_aliases(constant_aliases,options={})
-  		constant_aliases ||= {}
-  		if options[:auto_alias]
-  			auto_aliases = make_shortest_aliases(options[:auto_alias], :constant=>true)
-  			constant_aliases.merge!(auto_aliases)
-  		end
-  		clean_invalid_klass_keys(constant_aliases)
-  		constant_aliases.each {|k,v|
-  			Object.class_eval "#{v} = #{k}"
-  		}
-  		@constant_aliases.merge! constant_aliases
-  	end
-
+    def create_constant_aliases(aliases_hash, options={})
+      creator_obj = factory_create_aliases('constant', aliases_hash)
+      @constant_aliases.merge! creator_obj.alias_map
+    end
+    
     #TODO
     # def create_object_aliases(cmd_aliases,object)
     #   cmd_aliases ||= {}
@@ -74,64 +74,5 @@ module Alias
 
   	##query methods
 
-  	def make_shortest_aliases(unaliased_strings,options={})
-  		options = {:constant=>false}.update(options)
-  		shortest_aliases = {}
-  		possible_alias = ''
-  		unaliased_strings.each {|s|
-  			possible_alias = ''
-  			s.split('').each { |e|
-  				possible_alias += e	
-  				if ! shortest_aliases.values.include?(possible_alias) && ! (options[:constant] && Object.const_defined?(possible_alias))
-  					shortest_aliases[s] = possible_alias
-  					break
-  				end
-  			}
-  		}
-
-  		shortest_aliases
-  	end
-
-  	def clean_invalid_klass_keys(klass_hash)
-  		#clean hash of undefined classes
-  		klass_hash.each {|k,v| 
-  			if Object.any_const_get(k).nil?
-  				puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}" if @verbose
-  				klass_hash.delete(k)
-  			end
-  		}
-  	end
-	
-  	private
-	
-  	def create_aliases(aliases,options={})
-  		aliases ||= {}
-  		aliases.each { |k,alias_hash|
-  			klass = Object.any_const_get(k)
-  			if klass
-  				eval_string = ""
-  				alias_hash.each {|original_method, alias_methods|
-  					alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
-
-  					if ((options[:klass_alias] && ! klass.respond_to?(original_method)) ||
-  						( ! options[:klass_alias] && ! klass.method_defined?(original_method)) )
-  						puts "#{klass}: method '#{original_method}' not found and thus not aliased" if options[:verbose]
-  						next
-  					end
-
-  					alias_methods.each { |a|
-  						eval_string += "alias_method :#{a}, :#{original_method}\n"
-  					}
-  				}
-  				if options[:klass_alias]
-  					eval_string = "class <<self\n #{eval_string}\nend"
-  				end
-  				klass.class_eval eval_string
-  			else
-  				puts "Class #{k} not found and no aliases created" if options[:verbose]
-  			end
-
-  		}
-  	end
   end
 end

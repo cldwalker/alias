@@ -1,5 +1,5 @@
 #Creates instance, command and klass aliases. Some of the aliasing is based on forwardable.rb.
-require 'forwardable'
+# require 'forwardable'
 # require 'g/array'
 
 class Object #:nodoc:
@@ -70,3 +70,18 @@ class Object #:nodoc:
 	end
 
 end
+
+class Hash
+  #from ActiveSupport
+  def slice(*keys)
+    reject { |key,| !keys.include?(key) }
+  end
+  
+  def slice_off!(*keys)
+    new_hash = slice(*keys)
+    keys.each {|e| self.delete(e)}
+    new_hash
+  end
+end
+
+puts "yello"

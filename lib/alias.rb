@@ -1,6 +1,10 @@
 $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__))
 require "yaml"
 require 'alias/creator'
+require 'alias/base_creator'
+require 'alias/constant_creator'
+require 'alias/instance_creator'
+require 'alias/klass_creator'
 # require 'alias/search'
 require 'alias/core_extensions'
 # require "lib/forwardable"
@@ -27,7 +31,7 @@ module Alias
     end
     self
   end
-  
+    
   def creator
     @creator ||= Creator.new
   end
