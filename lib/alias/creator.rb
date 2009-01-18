@@ -52,7 +52,7 @@ module Alias
   	def create_constant_aliases(constant_aliases,options={})
   		constant_aliases ||= {}
   		if options[:auto_alias]
-  			auto_aliases = make_shortest_aliases(options[:auto_alias])
+  			auto_aliases = make_shortest_aliases(options[:auto_alias], :constant=>true)
   			constant_aliases.merge!(auto_aliases)
   		end
   		clean_invalid_klass_keys(constant_aliases)
@@ -75,7 +75,7 @@ module Alias
   	##query methods
 
   	def make_shortest_aliases(unaliased_strings,options={})
-  		options = {:constant=>true}.update(options)
+  		options = {:constant=>false}.update(options)
   		shortest_aliases = {}
   		possible_alias = ''
   		unaliased_strings.each {|s|
@@ -96,7 +96,7 @@ module Alias
   		#clean hash of undefined classes
   		klass_hash.each {|k,v| 
   			if Object.any_const_get(k).nil?
-  				puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}"
+  				puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}" if @verbose
   				klass_hash.delete(k)
   			end
   		}
