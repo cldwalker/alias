@@ -9,21 +9,21 @@ require 'alias/core_extensions'
 module Alias
   extend self
   
-  def load_config_file(file)
+  def load_config_file(file=nil)
     if file.nil?
-      if Object.const_defined?("RAILS_ROOT") && File.exists?("config/aliases.yml")
+      if File.exists?("config/aliases.yml")
         file = "config/aliases.yml"
       elsif File.exists?("aliases.yml")
         file = "aliases.yml"
       end
     end
-    YAML::load(File.read(file))
+    file ? YAML::load(File.read(file)) : {}
   end
   
   def setup(options={})
     config_hash = load_config_file(options[:file])
     config_hash.each do |k,v|
-      creator.load_alias_type(k, v)
+      creator.create_aliases_for_type(k, v)
     end
     self
   end
