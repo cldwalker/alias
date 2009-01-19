@@ -27,7 +27,7 @@ module Alias
   def setup(options={})
     config_hash = load_config_file(options[:file])
     config_hash.each do |k,v|
-      manager.create_aliases_for_type(k, v)
+      manager.create_aliases(k, v)
     end
     self
   end
