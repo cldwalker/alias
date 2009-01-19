@@ -1,5 +1,5 @@
 module Alias
-  class KlassCreator < BaseCreator
+  class KlassCreator < Creator
     def validate_aliases(*args); end
     
     def create_aliases(aliases_hash)

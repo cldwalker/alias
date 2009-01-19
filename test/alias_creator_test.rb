@@ -16,16 +16,16 @@ class AliasCreatorTest < Test::Unit::TestCase
     end
   end
   
-  test "BaseCreator cleans invalid klass keys" do
+  test "Creator cleans invalid klass keys" do
     h1 = {'Alias::Creator'=>'whoop','Yay'=>'Haha'}
-    @creator = Alias::BaseCreator.new
+    @creator = Alias::Creator.new
     @creator.clean_invalid_klass_keys(h1)
     h1.should == {'Alias::Creator'=>'whoop'}
   end
   
   
   context "Creator" do
-    before(:each) { @creator = Alias::Creator.new}
+    before(:each) { @creator = Alias::Manager.new}
     test "creates constant aliases" do
       h1 = {'Time'=>'T'}
       # @creator.create_constant_aliases(h1, :auto_alias=>['Date'])

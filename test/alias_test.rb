@@ -23,11 +23,11 @@ class AliasTest < Test::Unit::TestCase
     Alias.load_config_file.should == {}
   end
   
-  test ".setup creates creator object and non-empty aliases" do
+  test ".setup creates manager object and non-empty aliases" do
     Alias.setup :file=>File.join(File.dirname(__FILE__),'aliases.yml')
-    Alias.creator.instance_aliases.empty?.should_not be(true)
-    Alias.creator.klass_aliases.empty?.should_not be(true)
-    Alias.creator.constant_aliases.empty?.should_not be(true)
+    Alias.manager.instance_aliases.empty?.should_not be(true)
+    Alias.manager.klass_aliases.empty?.should_not be(true)
+    Alias.manager.constant_aliases.empty?.should_not be(true)
   end
   
 end

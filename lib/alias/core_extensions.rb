@@ -83,5 +83,3 @@ class Hash
     new_hash
   end
 end
-
-puts "yello"

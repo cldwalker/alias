@@ -1,7 +1,7 @@
 $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__))
 require "yaml"
+require 'alias/manager'
 require 'alias/creator'
-require 'alias/base_creator'
 require 'alias/constant_creator'
 require 'alias/instance_creator'
 require 'alias/klass_creator'
@@ -27,12 +27,12 @@ module Alias
   def setup(options={})
     config_hash = load_config_file(options[:file])
     config_hash.each do |k,v|
-      creator.create_aliases_for_type(k, v)
+      manager.create_aliases_for_type(k, v)
     end
     self
   end
     
-  def creator
-    @creator ||= Creator.new
+  def manager
+    @manager ||= Manager.new
   end
 end

@@ -1,0 +1,19 @@
+# = Description
+# Creates four types of aliases: instance, command, object,and constant.
+# All aliases for each type are stored in their respective accessors.
+# Here's a brief description of each alias:
+# * object: Aliases a class method to another object's method. Useful for creating commands
+#   in shells ie irb. For example, one could alias Pizza::Satchels.eat to @shell.eat_pizza. Note, that this
+#   alias would only applies to @shell and no other objects having the same class as @shell.
+# * klass: Aliases a class method in the class's namespace. For example, one could alias
+#   ActiveRecord::Base.find_with_exceedingly_long_method to ActiveRecord::Base.pita_find .
+# * instance: Aliases an instance method in the instance method's namespace. For example, one could alias
+#   @dog.piss_on_grass to @dog.make_friends.
+# * constant: Aliases constants. For example, one could alias Some::Wonderfully::Long::Constant to SWLC.
+#
+# The format to create method aliases are the same:
+#   {
+#     'Class1'=>{:method11=>:m11},
+#     'Class2'=>{:method21=>:m21}
+#   }
+#
