@@ -2,10 +2,10 @@
 module Alias
   class Manager
   
-  def initialize #:nodoc:
-    @aliases = {}
-    @verbose = true
-  end
+    def initialize #:nodoc:
+      @aliases = {}
+      @verbose = true
+    end
 
     attr_accessor :aliases
     def alias_types; @aliases.keys; end
@@ -21,7 +21,8 @@ module Alias
     end
     
     def create_aliases(alias_type, aliases_hash)
-      if obj = factory_create_aliases(alias_type.to_s, aliases_hash)
+      aliases_hash = aliases_hash.dup
+      if obj = factory_create_aliases(alias_type.to_s, aliases_hash.dup)
         @aliases[alias_type.to_sym] ||= obj
         
         accessor_method = "#{alias_type}_aliases"

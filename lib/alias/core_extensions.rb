@@ -72,9 +72,11 @@ class Object #:nodoc:
 end
 
 class Hash
-  #from ActiveSupport
-  def slice(*keys)
-    reject { |key,| !keys.include?(key) }
+  unless self.method_defined?(:slice)
+    #from ActiveSupport
+    def slice(*keys)
+      reject { |key,| !keys.include?(key) }
+    end
   end
   
   def slice_off!(*keys)

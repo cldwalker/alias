@@ -17,7 +17,8 @@ class AliasManagerTest < Test::Unit::TestCase
         end
       ]
       obj = SampleClass.new
-      @manager.create_aliases(:instance, {'SampleClass'=>{:whoop=>:can_of_wass}})
+      @manager.create_aliases(:instance, {'SampleClass'=>{:whoop=>:can_of_wass, :blah=>:bl}})
+      @manager.instance_aliases.should == {'SampleClass'=>{:whoop=>:can_of_wass}}
       SampleClass.new.whoop.should == SampleClass.new.can_of_wass
     end
     
@@ -27,8 +28,10 @@ class AliasManagerTest < Test::Unit::TestCase
           def self.cap; 'itup'; end
         end
       ]
-      hash1 = {'SampleClass'=>{:cap=>:capohow}}
-      @manager.create_aliases(:klass, hash1).should == hash1
+      hash1 = {'SampleClass'=>{:cap=>:capohow}, 'Array'=>{:blah=>:bl}}
+      @manager.create_aliases(:klass, hash1)
+      expected_result = {"SampleClass"=>{:cap=>:capohow}, "Array"=>{}}
+      assert_equal @manager.klass_aliases, expected_result
       SampleClass.capohow.should == SampleClass.cap
     end
   

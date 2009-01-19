@@ -10,6 +10,7 @@ module Alias
     attr_accessor :verbose
     def initialize(aliases_hash={})
       @alias_map = aliases_hash
+      @verbose = true
     end
     
     # Options are:
@@ -34,11 +35,14 @@ module Alias
     
     def create(aliases_hash)
       validate_aliases(aliases_hash)
+      @alias_map = aliases_hash
       create_aliases(aliases_hash)
     end
     
-    #By default these methods do nothing and should be overridden.
-    def validate_aliases(aliases_hash); end    
+    # Should be overridden and when validating, remove any invalid aliases from hash.
+    def validate_aliases(aliases_hash); end
+    
+    # Should be overridden.
     def create_aliases(aliases_hash); end
     
     def clean_invalid_klass_keys(klass_hash)
@@ -51,34 +55,25 @@ module Alias
       }
     end
     
-    #td: refactor
+    def create_method_aliases_for_klass(klass, alias_hash, options)
+      eval_string = ""
+      alias_hash.each {|original_method, alias_methods|
+        alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
+        alias_methods.each { |a|
+          eval_string += "alias_method :#{a}, :#{original_method}\n"
+        }
+      }
+      if self.is_a?(KlassCreator)
+        eval_string = "class <<self\n #{eval_string}\nend"
+      end
+      klass.class_eval eval_string
+    end
+    
     def create_method_aliases(aliases,options={})
       aliases ||= {}
       aliases.each { |k,alias_hash|
         klass = Object.any_const_get(k)
-        if klass
-          eval_string = ""
-          alias_hash.each {|original_method, alias_methods|
-            alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
-
-            if ((options[:klass_alias] && ! klass.respond_to?(original_method)) ||
-              ( ! options[:klass_alias] && ! klass.method_defined?(original_method)) )
-              puts "#{klass}: method '#{original_method}' not found and thus not aliased" if options[:verbose]
-              next
-            end
-
-            alias_methods.each { |a|
-              eval_string += "alias_method :#{a}, :#{original_method}\n"
-            }
-          }
-          if options[:klass_alias]
-            eval_string = "class <<self\n #{eval_string}\nend"
-          end
-          klass.class_eval eval_string
-        else
-          puts "Class #{k} not found and no aliases created" if options[:verbose]
-        end
-
+        create_method_aliases_for_klass(klass, alias_hash, options)
       }
     end
     
