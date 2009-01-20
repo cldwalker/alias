@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-class AliasCreatorTest < Test::Unit::TestCase
+class Alias::CreatorTest < Test::Unit::TestCase
   context "Make shortest aliases" do
     before(:all) { eval "::Y = 'some value'" }
     before(:each) { @creator = Alias::ConstantCreator.new}

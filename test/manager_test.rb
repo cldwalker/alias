@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-class AliasManagerTest < Test::Unit::TestCase
+class Alias::ManagerTest < Test::Unit::TestCase
     before(:each) { @manager = Alias::Manager.new}
     
     context "Manager" do

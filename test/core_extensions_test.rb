@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-class CoreExtensionsTest < Test::Unit::TestCase
+class Alias::CoreExtensionsTest < Test::Unit::TestCase
   test "any_const_get fetches simple class" do
     Object.any_const_get("Array").should == Array
   end
