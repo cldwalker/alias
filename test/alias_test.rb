@@ -27,8 +27,8 @@ class AliasTest < Test::Unit::TestCase
     before(:each) { Alias.config = {}}
     test "creates manager object and non-empty aliases" do
       Alias.init :file=>File.join(File.dirname(__FILE__),'aliases.yml')
-      Alias.manager.instance_aliases.empty?.should_not be(true)
-      Alias.manager.klass_aliases.empty?.should_not be(true)
+      Alias.manager.instance_method_aliases.empty?.should_not be(true)
+      Alias.manager.class_method_aliases.empty?.should_not be(true)
       Alias.manager.constant_aliases.empty?.should_not be(true)
     end
     

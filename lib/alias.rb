@@ -3,8 +3,8 @@ require "yaml"
 require 'alias/manager'
 require 'alias/creator'
 require 'alias/constant_creator'
-require 'alias/instance_creator'
-require 'alias/klass_creator'
+require 'alias/instance_method_creator'
+require 'alias/class_method_creator'
 require 'alias/core_extensions'
 
 module Alias

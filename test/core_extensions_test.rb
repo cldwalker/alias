@@ -23,4 +23,12 @@ class CoreExtensionsTest < Test::Unit::TestCase
     h.slice_off!(:a, :c).should == {:a=>1}
     h.should == {:b=>2}
   end
+  
+  test "camelize should uppercase non-underscored string" do
+    'man'.camelize.should == 'Man'
+  end
+  
+  test "camelize should camelize underscored string" do
+    'some_test'.camelize.should == 'SomeTest'
+  end
 end

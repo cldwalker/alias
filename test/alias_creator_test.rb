@@ -16,23 +16,23 @@ class AliasCreatorTest < Test::Unit::TestCase
     end
   end
   
-  test "Creator cleans invalid klass keys" do
+  test "Creator cleans invalid class keys" do
     h1 = {'Alias::Creator'=>'whoop','Yay'=>'Haha'}
     @creator = Alias::Creator.new
-    @creator.clean_invalid_klass_keys(h1)
+    @creator.clean_invalid_class_keys(h1)
     h1.should == {'Alias::Creator'=>'whoop'}
   end
     
-  test "KlassCreator cleans invalid klass method keys" do
+  test "ClassMethodCreator cleans invalid class method keys" do
     h1 = {'String'=>{'to_s'=>'ts'},'Array'=>{'blah'=>'bl'}}
-    @creator = Alias::KlassCreator.new
-    @creator.clean_invalid_klass_method_keys(h1)
+    @creator = Alias::ClassMethodCreator.new
+    @creator.clean_invalid_class_method_keys(h1)
     h1.should == {"Array"=>{}, "String"=>{"to_s"=>"ts"}}
   end
   
-  test "InstanceCreator cleans invalid instance method keys" do
+  test "InstanceMethodCreator cleans invalid instance method keys" do
     h1 = {'String'=>{'strip'=>'st'},'Array'=>{'blah', 'bl'}}
-    @creator = Alias::InstanceCreator.new
+    @creator = Alias::InstanceMethodCreator.new
     @creator.clean_invalid_instance_method_keys(h1)
     h1.should == {"Array"=>{}, "String"=>{"strip"=>"st"}}
   end

@@ -2,7 +2,7 @@ module Alias
   class ConstantCreator < Creator
     
     def validate_aliases(aliases_hash)
-      clean_invalid_klass_keys(aliases_hash)
+      clean_invalid_class_keys(aliases_hash)
     end
     
     def create_aliases(aliases_hash)

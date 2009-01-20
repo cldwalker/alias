@@ -1,11 +1,11 @@
 constant:
     Object: O
   
-klass:
+class_method:
     Object:
       const_get: cg
 
-instance:
+instance_method:
     String:
         to_s: ts
         bling: bl

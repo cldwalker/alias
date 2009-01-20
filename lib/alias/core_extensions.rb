@@ -1,6 +1,6 @@
 class Hash
   unless self.method_defined?(:slice)
-    #from ActiveSupport
+    # simplified from ActiveSupport
     def slice(*keys)
       reject { |key,| !keys.include?(key) }
     end
@@ -22,5 +22,14 @@ class Object #:nodoc:
     }
     klass
     rescue; nil; end
+  end
+end
+
+class String #:nodoc
+  unless self.method_defined?(:camelize)
+    #simplified from ActiveSupport
+    def camelize
+      self.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+    end
   end
 end

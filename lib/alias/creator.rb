@@ -52,7 +52,7 @@ module Alias
     end
     
     #clean hash of undefined classes
-    def clean_invalid_klass_keys(klass_hash)
+    def clean_invalid_class_keys(klass_hash)
       klass_hash.each {|k,v| 
         if Object.any_const_get(k).nil?
           puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}" if self.verbose
@@ -61,7 +61,7 @@ module Alias
       }
     end
     
-    def create_method_aliases_for_klass(klass, alias_hash, options)
+    def create_method_aliases_per_class(klass, alias_hash, options)
       eval_string = ""
       alias_hash.each {|original_method, alias_methods|
         alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
@@ -69,7 +69,7 @@ module Alias
           eval_string += "alias_method :#{a}, :#{original_method}\n"
         }
       }
-      if self.is_a?(KlassCreator)
+      if self.is_a?(ClassMethodCreator)
         eval_string = "class <<self\n #{eval_string}\nend"
       end
       klass.class_eval eval_string
@@ -79,7 +79,7 @@ module Alias
       aliases ||= {}
       aliases.each { |k,alias_hash|
         klass = Object.any_const_get(k)
-        create_method_aliases_for_klass(klass, alias_hash, options)
+        create_method_aliases_per_class(klass, alias_hash, options)
       }
     end
     
