@@ -11,6 +11,12 @@ class Alias::ManagerTest < Test::Unit::TestCase
       assert @manager.alias_creators[:constant].verbose
     end
     
+    test "force option sets force in creator object" do
+      h1 = {'force'=>true}
+      @manager.create_aliases(:constant, h1)
+      assert @manager.alias_creators[:constant].force
+    end
+    
     test "creates constant aliases" do
       h1 = {'Time'=>'T', 'auto_alias'=>['Date']}
       @manager.create_aliases(:constant, h1)

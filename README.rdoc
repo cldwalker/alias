@@ -21,9 +21,14 @@ If neither is the case, pass a :file option to init():
 
     Alias.init :file=>"/path/to/my/clandestine_aliases.yml"
 
-If you'd like to see Alias in its garrulous splendor, pass it a :verbose option.
+If you'd like to define your aliases without a config file, pass Alias.init() a block and
+call methods as if they were top level keys in the config:
 
-    Alias.init :verbose=>true
+    Alias.init do |a|
+      a.verbose = true
+      a.constant = {'Array' = 'A'}
+      a.instance_method = {'String'=>{'downcase'=>'dc' }, 'Array'=>{'select'=>'s'}}
+    end
 
 == Configuration
 
@@ -62,10 +67,8 @@ See creator.rb for more methods you can hook into.
 
 ==  Todo
 
-* Add a safety check which ensures that no methods or classes or overridden when aliasing.
 * Provide an auto_alias method for creators.
 * List and search your aliases which can be easy to forget.
 * Alias/forward methods from one object to another. This will be useful for creating
   'commands' in irb.
-* Perhaps allow a :config option to Alias.init() to avoid using a config file.
 * Add more RDoc documentation. 

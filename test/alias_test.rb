@@ -25,6 +25,18 @@ class AliasTest < Test::Unit::TestCase
   
   context "Alias_init" do
     before(:each) { Alias.config = {}}
+    
+    test "with block sets config properly" do
+      Alias.manager.expects(:create_aliases).times(2)
+      Alias.init do |a|
+        a.verbose = true
+        a.constant = {'Blah'=>'B'}
+        a.instance_method = {'String'=>{'to_s'=>'s'}}
+      end
+      expected_config = {"instance_method"=>{"String"=>{"to_s"=>"s"}}, "constant"=>{"Blah"=>"B"}, "verbose"=>true}
+      Alias.config.should == expected_config
+    end
+    
     test "creates manager object and non-empty aliases" do
       Alias.init :file=>File.join(File.dirname(__FILE__),'aliases.yml')
       Alias.manager.instance_method_aliases.empty?.should_not be(true)

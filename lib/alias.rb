@@ -1,5 +1,6 @@
 $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__))
-require "yaml"
+require 'yaml'
+require 'ostruct'
 require 'alias/manager'
 require 'alias/creator'
 require 'alias/constant_creator'
@@ -26,6 +27,14 @@ module Alias
     config_hash = load_config_file(options[:file])
     config.merge! config_hash
     config['verbose'] = options[:verbose] if !options[:verbose].nil?
+    
+    if block_given?
+      obj = OpenStruct.new
+      yield(obj)
+      block_config = obj.to_hash.stringify_keys
+      config.merge! block_config
+    end
+    
     manager.verbose = config['verbose'] if config.has_key?('verbose')
     config.each do |k,v|
       next if ['verbose'].include?(k)

@@ -19,6 +19,7 @@ module Alias
     def self.create(aliases_hash, options={})
       obj = new(aliases_hash)
       obj.verbose = options['verbose'] if options['verbose']
+      obj.force = options['force'] if options['force']
       obj.create(obj.alias_map)
       if options['auto_alias']
         obj.alias_map = obj.alias_map.merge(obj.auto_create(options['auto_alias']))

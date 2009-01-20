@@ -5,14 +5,15 @@ module Alias
     def initialize #:nodoc:
       @alias_creators = {}
       @verbose = false
+      @force = false
     end
 
-    attr_accessor :alias_creators, :verbose
+    attr_accessor :alias_creators, :verbose, :force
     def alias_types; @alias_creators.keys; end
     
     def factory_create_aliases(alias_type, aliases_hash)
       creator_class_string = "Alias::#{alias_type.camelize}Creator"
-      create_options = aliases_hash.slice_off!('auto_alias', 'verbose')
+      create_options = aliases_hash.slice_off!('auto_alias', 'verbose', 'force')
       create_options['verbose'] = @verbose unless create_options.has_key?('verbose')
       if creator_class = Object.any_const_get(creator_class_string)
         creator_class.create(aliases_hash, create_options)
