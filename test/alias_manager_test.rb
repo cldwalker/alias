@@ -2,7 +2,13 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 class AliasManagerTest < Test::Unit::TestCase
     before(:each) { @manager = Alias::Manager.new}
+    
+    test "manager verbosity trickles down to creator objects" do
+      pending
+    end
+    
     test "creates constant aliases" do
+      # h1 = {'Time'=>'T', 'auto_alias'=>['Date']}
       h1 = {'Time'=>'T'}
       # @creator.create_constant_aliases(h1, :auto_alias=>['Date'])
       #td: auto_alias

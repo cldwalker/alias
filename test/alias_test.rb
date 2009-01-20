@@ -23,11 +23,28 @@ class AliasTest < Test::Unit::TestCase
     Alias.load_config_file.should == {}
   end
   
-  test ".setup creates manager object and non-empty aliases" do
-    Alias.setup :file=>File.join(File.dirname(__FILE__),'aliases.yml')
-    Alias.manager.instance_aliases.empty?.should_not be(true)
-    Alias.manager.klass_aliases.empty?.should_not be(true)
-    Alias.manager.constant_aliases.empty?.should_not be(true)
+  context "Alias_init" do
+    before(:each) { Alias.config = {}}
+    test "creates manager object and non-empty aliases" do
+      Alias.init :file=>File.join(File.dirname(__FILE__),'aliases.yml')
+      Alias.manager.instance_aliases.empty?.should_not be(true)
+      Alias.manager.klass_aliases.empty?.should_not be(true)
+      Alias.manager.constant_aliases.empty?.should_not be(true)
+    end
+    
+    test "with verbose option sets config and manager verbosity" do
+      Alias.manager.stubs(:create_aliases)
+      Alias.init :verbose=>true
+      assert Alias.config['verbose']
+      assert Alias.manager.verbose
+    end
+    
+    test "with no verbose option doesn't set config and manager verbosity" do
+      Alias.manager.stubs(:create_aliases)
+      assert Alias.manager.expects(:verbose=).never
+      Alias.init
+      assert Alias.config['verbose'].nil?
+    end
   end
   
 end

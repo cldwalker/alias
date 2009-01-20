@@ -24,13 +24,23 @@ module Alias
     file ? YAML::load(File.read(file)) : {}
   end
   
-  def setup(options={})
+  def init(options={})
     config_hash = load_config_file(options[:file])
-    config_hash.each do |k,v|
+    config.merge! config_hash
+    config['verbose'] = options[:verbose] if !options[:verbose].nil?
+    manager.verbose = config['verbose'] if config.has_key?('verbose')
+    config.each do |k,v|
+      next if ['verbose'].include?(k)
       manager.create_aliases(k, v)
     end
     self
   end
+  
+  def config
+    @config ||= {}
+  end
+  
+  def config=(value); @config = value; end
     
   def manager
     @manager ||= Manager.new

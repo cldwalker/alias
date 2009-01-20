@@ -6,9 +6,11 @@ module Alias
     end
     
     def create_aliases(aliases_hash)
+      eval_string = ''
       aliases_hash.each {|k,v|
-        Object.class_eval "#{v} = #{k}"
+        eval_string += "#{v} = #{k}\n"
       }
+      Object.class_eval eval_string
     end
     
     def generate_aliases(array_to_alias)

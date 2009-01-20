@@ -10,7 +10,7 @@ module Alias
     attr_accessor :verbose
     def initialize(aliases_hash={})
       @alias_map = aliases_hash
-      @verbose = true
+      @verbose = false
     end
     
     # Options are:
@@ -18,11 +18,11 @@ module Alias
     #   if the constant A already exists, then Aardvark would be aliased to Aa.
     def self.create(aliases_hash, options={})
       obj = new(aliases_hash)
+      obj.verbose = options['verbose'] if options['verbose']
       obj.create(obj.alias_map)
       if options['auto_alias']
         obj.alias_map.merge obj.auto_create(options['auto_alias'])
       end
-      obj.verbose = options['verbose'] if options['verbose']
       #td: eval w/ optional safety or just generate eval code
       obj
     end
@@ -42,11 +42,18 @@ module Alias
     # Should be overridden and when validating, remove any invalid aliases from hash.
     def validate_aliases(aliases_hash); end
     
-    # Should be overridden.
-    def create_aliases(aliases_hash); end
+    # Must be overridden to use create()
+    def create_aliases(aliases_hash); 
+      raise "This abstract method must be overridden."
+    end
     
+    # Must be overridden to use auto_create()
+    def generate_aliases(array_to_alias);
+      raise "This abstract method must be overridden."
+    end
+    
+    #clean hash of undefined classes
     def clean_invalid_klass_keys(klass_hash)
-      #clean hash of undefined classes
       klass_hash.each {|k,v| 
         if Object.any_const_get(k).nil?
           puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}" if self.verbose

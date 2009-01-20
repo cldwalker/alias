@@ -4,16 +4,18 @@ module Alias
   
     def initialize #:nodoc:
       @aliases = {}
-      @verbose = true
+      @verbose = false
     end
 
-    attr_accessor :aliases
+    attr_accessor :aliases, :verbose
     def alias_types; @aliases.keys; end
     
     def factory_create_aliases(alias_type, aliases_hash)
       creator_class_string = "Alias::#{alias_type.capitalize}Creator"
+      create_options = aliases_hash.slice_off!('auto_alias', 'verbose')
+      create_options['verbose'] ||= @verbose if @verbose
       if creator_class = Object.any_const_get(creator_class_string)
-        creator_class.create(aliases_hash, aliases_hash.slice_off!('auto_alias').merge('verbose'=>true))
+        creator_class.create(aliases_hash, create_options)
       else
         puts "Creator class '#{creator_class_string}' not found." if @verbose
         nil

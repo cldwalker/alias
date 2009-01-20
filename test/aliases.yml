@@ -8,3 +8,4 @@ klass:
 instance:
     String:
         to_s: ts
+        bling: bl
