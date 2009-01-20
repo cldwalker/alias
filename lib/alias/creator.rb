@@ -22,10 +22,10 @@ module Alias
       if options['auto_alias']
         obj.alias_map = obj.alias_map.merge(obj.auto_create(options['auto_alias']))
       end
-      #td: eval w/ optional safety or just generate eval code
       obj
     end
     
+    #needs to return generated aliases_hash
     def auto_create(array_to_alias)
       aliases_hash = generate_aliases(array_to_alias)
       create(aliases_hash)

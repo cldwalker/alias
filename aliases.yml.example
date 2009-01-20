@@ -1,0 +1,16 @@
+verbose: true
+constant:
+    ActiveRecord::Base: AB
+    ActionView::Base: AVB
+  
+class_method:
+    ActiveRecord::Base : 
+      connection: cn
+      find: f
+      delete: d
+
+instance_method:
+    ActiveRecord::Base :
+      update_attribute: ua
+    Array : 
+      select: s 
