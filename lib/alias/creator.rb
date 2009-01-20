@@ -37,7 +37,10 @@ module Alias
       delete_invalid_aliases(aliases_hash)
       delete_existing_aliases(aliases_hash) unless self.force
       @alias_map = aliases_hash
-      create_aliases(aliases_hash)
+      #td: create method for efficiently removing constants/methods in any namespace
+      silence_warnings {
+        create_aliases(aliases_hash)
+      }
     end
     
     # Should be overridden to delete aliases that point to invalid/nonexistent classes, methods ...
@@ -66,5 +69,12 @@ module Alias
       }
     end
     
+    private
+    def silence_warnings
+      old_verbose, $VERBOSE = $VERBOSE, nil
+      yield
+    ensure
+      $VERBOSE = old_verbose
+    end
   end
 end

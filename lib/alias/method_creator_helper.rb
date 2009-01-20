@@ -19,10 +19,12 @@ module Alias
     
     def delete_invalid_method_keys(alias_hash)
       alias_hash.each do |k, methods|
-        methods.keys.each do |e|
-          if (klass = Object.any_const_get(k)) && ! method_exists?(klass,e )
-            methods.delete(e)
-            puts "#{klass}: method '#{e}' not found and thus not aliased" if self.verbose
+        if klass = Object.any_const_get(k)
+          methods.keys.each do |e|
+            if ! method_exists?(klass,e)
+              methods.delete(e)
+              puts "#{klass}: alias to method '#{e}' deleted since it doesn't exist" if self.verbose
+            end
           end
         end
       end
@@ -32,16 +34,16 @@ module Alias
       aliases_hash.each do |k, methods_hash|
         if klass = Object.any_const_get(k)
           methods_hash.each do |a,b|
-            if method_exists?(klass,b)
+            if method_exists?(klass,b) && !(alias_map[k].is_a?(Hash) && alias_map[k].values.include?(b))
               methods_hash.delete(a)
-              puts "#{klass}: method '#{b}' already exists" if self.verbose
+              puts "#{klass}: alias '#{b}' deleted since the method already exists" if self.verbose
             end
           end
         end
       end
     end
     
-    def create_method_aliases_per_class(klass, alias_hash, options)
+    def create_method_aliases_per_class(klass, alias_hash)
       eval_string = ""
       alias_hash.each {|original_method, alias_methods|
         alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
@@ -55,11 +57,11 @@ module Alias
       klass.class_eval eval_string
     end
     
-    def create_method_aliases(aliases,options={})
+    def create_method_aliases(aliases)
       aliases ||= {}
       aliases.each { |k,alias_hash|
         if klass = Object.any_const_get(k)
-          create_method_aliases_per_class(klass, alias_hash, options)
+          create_method_aliases_per_class(klass, alias_hash)
         end
       }
     end      
