@@ -13,7 +13,7 @@ class Hash
   end
 end
 
-class Object #:nodoc:
+class Object
   def self.any_const_get(name)
     begin
     klass = Object
@@ -25,11 +25,20 @@ class Object #:nodoc:
   end
 end
 
-class String #:nodoc
+class String
   unless self.method_defined?(:camelize)
     #simplified from ActiveSupport
     def camelize
       self.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
     end
+  end
+end
+
+module Kernel
+  def silence_warnings
+    old_verbose, $VERBOSE = $VERBOSE, nil
+    yield
+  ensure
+    $VERBOSE = old_verbose
   end
 end

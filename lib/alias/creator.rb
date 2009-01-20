@@ -1,15 +1,16 @@
 # This is the base creator class from which other *Creator classes inherit.
 # Methods this class provides to non-creator classes are: Creator.create()
-# Methods this class provides to creator classes to be overridden: @creator.validate_aliases
+# Methods this class provides to creator classes to be overridden: @creator.delete_invalid_aliases
 # and @creator.create_aliases
 
 module Alias
   class Creator
     
-    attr_accessor :verbose, :alias_map
+    attr_accessor :verbose, :alias_map, :force
     def initialize(aliases_hash={})
       @alias_map = aliases_hash
       @verbose = false
+      @force = false
     end
     
     # Options are:
@@ -33,13 +34,18 @@ module Alias
     end
     
     def create(aliases_hash)
-      validate_aliases(aliases_hash)
+      delete_invalid_aliases(aliases_hash)
+      delete_existing_aliases(aliases_hash) unless self.force
       @alias_map = aliases_hash
       create_aliases(aliases_hash)
     end
     
-    # Should be overridden and when validating, remove any invalid aliases from hash.
-    def validate_aliases(aliases_hash); end
+    # Should be overridden to delete aliases that point to invalid/nonexistent classes, methods ...
+    def delete_invalid_aliases(aliases_hash); end
+    
+    # Should be overridden to delete aliases that already exist. This method can be bypassed by passing
+    # a force option to the creator.
+    def delete_existing_aliases(aliases_hash); end
     
     # Must be overridden to use create()
     def create_aliases(aliases_hash); 
@@ -51,35 +57,12 @@ module Alias
       raise "This abstract method must be overridden."
     end
     
-    #clean hash of undefined classes
-    def clean_invalid_class_keys(klass_hash)
+    def delete_invalid_class_keys(klass_hash)
       klass_hash.each {|k,v| 
         if Object.any_const_get(k).nil?
           puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}" if self.verbose
           klass_hash.delete(k)
         end
-      }
-    end
-    
-    def create_method_aliases_per_class(klass, alias_hash, options)
-      eval_string = ""
-      alias_hash.each {|original_method, alias_methods|
-        alias_methods = [alias_methods] unless alias_methods.is_a?(Array)
-        alias_methods.each { |a|
-          eval_string += "alias_method :#{a}, :#{original_method}\n"
-        }
-      }
-      if self.is_a?(ClassMethodCreator)
-        eval_string = "class <<self\n #{eval_string}\nend"
-      end
-      klass.class_eval eval_string
-    end
-    
-    def create_method_aliases(aliases,options={})
-      aliases ||= {}
-      aliases.each { |k,alias_hash|
-        klass = Object.any_const_get(k)
-        create_method_aliases_per_class(klass, alias_hash, options)
       }
     end
     
