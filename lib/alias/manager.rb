@@ -35,16 +35,5 @@ module Alias
         self.send(accessor_method).merge! obj.alias_map
       end
     end
-    
-    #TODO
-    # def create_object_aliases(cmd_aliases,object)
-    #   cmd_aliases ||= {}
-    #   #w: currently keeps track of all object methods that are aliased
-    #   clean_invalid_klass_keys(cmd_aliases)
-    #   #no validation until invalid_klasses key option
-    #   import_methods_to_object(object,cmd_aliases, :validate=>false)
-    #   @object_aliases.merge! cmd_aliases
-    # end
-
   end
 end

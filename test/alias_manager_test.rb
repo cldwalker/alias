@@ -38,7 +38,7 @@ class AliasManagerTest < Test::Unit::TestCase
       hash1 = {'SampleClass'=>{:cap=>:capohow}, 'Array'=>{:blah=>:bl}}
       @manager.create_aliases(:klass, hash1)
       expected_result = {"SampleClass"=>{:cap=>:capohow}, "Array"=>{}}
-      assert_equal @manager.klass_aliases, expected_result
+      assert_equal expected_result, @manager.klass_aliases
       SampleClass.capohow.should == SampleClass.cap
     end
     end

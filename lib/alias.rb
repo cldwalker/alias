@@ -5,10 +5,7 @@ require 'alias/creator'
 require 'alias/constant_creator'
 require 'alias/instance_creator'
 require 'alias/klass_creator'
-# require 'alias/search'
 require 'alias/core_extensions'
-# require "lib/forwardable"
-# require "lib/object"
 
 module Alias
   extend self
