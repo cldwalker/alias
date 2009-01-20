@@ -6,8 +6,7 @@
 module Alias
   class Creator
     
-    attr_reader :alias_map
-    attr_accessor :verbose
+    attr_accessor :verbose, :alias_map
     def initialize(aliases_hash={})
       @alias_map = aliases_hash
       @verbose = false
@@ -21,7 +20,7 @@ module Alias
       obj.verbose = options['verbose'] if options['verbose']
       obj.create(obj.alias_map)
       if options['auto_alias']
-        obj.alias_map.merge obj.auto_create(options['auto_alias'])
+        obj.alias_map = obj.alias_map.merge(obj.auto_create(options['auto_alias']))
       end
       #td: eval w/ optional safety or just generate eval code
       obj

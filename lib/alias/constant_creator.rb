@@ -8,7 +8,7 @@ module Alias
     def create_aliases(aliases_hash)
       eval_string = ''
       aliases_hash.each {|k,v|
-        eval_string += "#{v} = #{k}\n"
+        eval_string += "#{v} = #{k};\n"
       }
       Object.class_eval eval_string
     end

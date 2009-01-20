@@ -3,17 +3,18 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 class AliasManagerTest < Test::Unit::TestCase
     before(:each) { @manager = Alias::Manager.new}
     
-    test "manager verbosity trickles down to creator objects" do
-      pending
+    context "Manager" do
+    test "verbosity trickles down to creator objects" do
+      h1 = {'String'=>'Strang'}
+      @manager.verbose = true
+      @manager.create_aliases(:constant, h1)
+      assert @manager.alias_creators[:constant].verbose
     end
     
     test "creates constant aliases" do
-      # h1 = {'Time'=>'T', 'auto_alias'=>['Date']}
-      h1 = {'Time'=>'T'}
-      # @creator.create_constant_aliases(h1, :auto_alias=>['Date'])
-      #td: auto_alias
+      h1 = {'Time'=>'T', 'auto_alias'=>['Date']}
       @manager.create_aliases(:constant, h1)
-      @manager.constant_aliases.should == {'Time'=>'T'}
+      @manager.constant_aliases.should == {'Time'=>'T', 'Date'=>'D'}
     end
     
     test "creates instance aliases" do
@@ -39,6 +40,7 @@ class AliasManagerTest < Test::Unit::TestCase
       expected_result = {"SampleClass"=>{:cap=>:capohow}, "Array"=>{}}
       assert_equal @manager.klass_aliases, expected_result
       SampleClass.capohow.should == SampleClass.cap
+    end
     end
   
 end
