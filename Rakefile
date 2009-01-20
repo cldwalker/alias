@@ -24,7 +24,7 @@ begin
     s.summary = s.description
     s.authors = ["Gabriel Horner"]
     s.has_rdoc = true
-    s.files = ["README.markdown", "LICENSE.txt", "{bin,lib,test}/**/*"]
+    s.files = FileList["README.rdoc", "LICENSE.txt", "aliases.yml.example", "{lib,test}/**/*"]
   end
 
 rescue LoadError
