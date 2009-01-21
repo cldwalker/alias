@@ -44,9 +44,3 @@ class String
     end
   end
 end
-
-class OpenStruct
-  def to_hash
-    @table
-  end
-end
