@@ -6,11 +6,20 @@
 module Alias
   class Creator
     
-    attr_accessor :verbose, :alias_map, :force
+    attr_accessor :verbose, :alias_map, :force, :searched_at, :modified_at
     def initialize(aliases_hash={})
-      @alias_map = aliases_hash
+      self.alias_map = aliases_hash
       @verbose = false
       @force = false
+    end
+    
+    def modified_since_last_search?
+      (@searched_at && @modified_at) ? (@modified_at > @searched_at) : true
+    end
+    
+    def alias_map=(value)
+      @modified_at = Time.now
+      @alias_map = value
     end
     
     # Options are:
@@ -37,7 +46,8 @@ module Alias
     def create(aliases_hash)
       delete_invalid_aliases(aliases_hash)
       delete_existing_aliases(aliases_hash) unless self.force
-      @alias_map = aliases_hash
+      self.alias_map = aliases_hash
+      
       #td: create method for efficiently removing constants/methods in any namespace
       silence_warnings {
         create_aliases(aliases_hash)
@@ -60,6 +70,9 @@ module Alias
     def generate_aliases(array_to_alias);
       raise "This abstract method must be overridden."
     end
+    
+    #Should be overridden to support search
+    def to_searchable_array; []; end
     
     def delete_invalid_class_keys(klass_hash)
       klass_hash.each {|k,v| 

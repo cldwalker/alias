@@ -43,6 +43,14 @@ module Alias
       end
     end
     
+    def to_searchable_array
+      @alias_map.map {|klass,method_hash|
+        method_hash.map {|k,v| 
+          {:class=>klass, :name=>k, :alias=>v}
+        }
+      }.flatten
+    end
+    
     def create_method_aliases_per_class(klass, alias_hash)
       eval_string = ""
       alias_hash.each {|original_method, alias_methods|

@@ -26,6 +26,10 @@ module Alias
       make_shortest_aliases(array_to_alias)
     end
     
+    def to_searchable_array
+      @alias_map.map {|k,v| {:name=>k, :alias=>v}}
+    end
+    
     def make_shortest_aliases(unaliased_strings)
       shortest_aliases = {}
       possible_alias = ''

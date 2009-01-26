@@ -25,6 +25,11 @@ class Alias::MethodCreatorHelperTest < Test::Unit::TestCase
       @creator.create(h2)
       assert_equal 'blah', String.n('blah')
     end
+    
+    test "to_searchable_array is an array of hashes" do
+      @creator.alias_map = {'String'=>{'name'=>'n'}}
+      @creator.to_searchable_array.should == [{:name=>'name', :alias=>'n', :class=>'String'}]
+    end
   end
   
   context "InstanceMethodCreator" do
