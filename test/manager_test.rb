@@ -57,18 +57,18 @@ class Alias::ManagerTest < Test::Unit::TestCase
         test "sets creator's searched_at" do
           setup_search
           assert @manager.alias_creators[:constant].searched_at.nil? 
-          @manager.search :name, 'blah'
+          @manager.search :name=>'blah'
           assert @manager.alias_creators[:constant].searched_at.is_a?(Time)
         end
         
         test "with string returns exact match" do
           setup_search
-          @manager.search(:name, 'Array').should == [{:name=>'Array', :alias=>'A'}]
+          @manager.search(:name=>'Array').should == [{:name=>'Array', :alias=>'A'}]
         end
         
         test "with regex returns multiple matches " do
           setup_search
-          @manager.search(:name, /A/).should == [{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'Ab'}]
+          @manager.search(:name=>/A/).should == [{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'Ab'}]
         end
       end
       

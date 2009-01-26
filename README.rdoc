@@ -68,7 +68,7 @@ See creator.rb for more methods you can hook into.
 ==  Todo
 
 * Provide an auto_alias method for creators.
-* List and search your aliases which can be easy to forget.
+* Save aliases to file (for console use).
 * Alias/forward methods from one object to another. This will be useful for creating
   'commands' in irb.
 * Add more RDoc documentation. 

@@ -38,12 +38,32 @@ module Alias
       end
     end
     
-    def search(field, search_term)
+    def search(search_hash)
+      result = nil
+      search_hash.each do |k,v|
+        new_result = simple_search(k,v)
+        #AND's searches
+        result = intersection_of_two_arrays(new_result, result)
+      end
+      #duplicate results in case they are modified
+      result = result.map {|e| e.dup} if result
+      alias_creator_objects.each {|e| e.searched_at = Time.now }
+      result
+    end
+    
+    def list
+      indexed_aliases.map {|e| e.dup}
+    end
+    
+    def simple_search(field, search_term)
       result = indexed_aliases.select {|e| 
         search_term.is_a?(Regexp) ? e[field] =~ search_term : e[field] == search_term
       }
-      alias_creator_objects.each {|e| e.searched_at = Time.now }
       result
+    end
+    
+    def intersection_of_two_arrays(arr1, arr2)
+      arr2.nil? ? arr1 : arr1.select {|e| arr2.include?(e)}
     end
     
     def indexed_aliases(reindex=true)
