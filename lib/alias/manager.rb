@@ -8,7 +8,7 @@ module Alias
       @force = false
     end
 
-    attr_accessor :alias_creators, :verbose, :force
+    attr_accessor :alias_creators, :verbose, :force, :indexed_aliases
     def alias_types; @alias_creators.keys; end
     def alias_creator_objects; @alias_creators.values; end
     
@@ -39,19 +39,18 @@ module Alias
     end
     
     def search(field, search_term)
-      result = searchable_aliases.select {|e| 
+      result = indexed_aliases.select {|e| 
         search_term.is_a?(Regexp) ? e[field] =~ search_term : e[field] == search_term
       }
       alias_creator_objects.each {|e| e.searched_at = Time.now }
       result
     end
     
-    def searchable_aliases
-      # @searchable_aliases = nil if alias_creator_objects.any? {|e| e.modified_since_last_search? }
-      @searchable_aliases = create_searchable_aliases(@searchable_aliases)
+    def indexed_aliases(reindex=true)
+      reindex ? @indexed_aliases = reindex_aliases(@indexed_aliases) : @indexed_aliases
     end
         
-    def create_searchable_aliases(searchable_array=nil)
+    def reindex_aliases(searchable_array=nil)
       searchable_array ||= []
       @alias_creators.map do |type, creator|
         if creator.modified_since_last_search?
