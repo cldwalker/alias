@@ -10,8 +10,8 @@ module Alias
     end
     
     #options: type, raw, class, sort
-    #s 'man', :t=>'instance_method'
-    #s /ma/, :r=>true
+    #s 'man', :type=>'instance_method'
+    #s /ma/, :raw=>true
     def search(*args)
       options = args[-1].is_a?(Hash) ? args[-1].slice_off!(:raw, :sort) : {}
       if args[0] && ! (args[0].is_a?(Hash) && args[0].empty?)
@@ -42,9 +42,13 @@ module Alias
     
     def format_search(result, options)
       body = ''
-      result.each do |e|
-        h = e.slice_off!(:name, :alias)
-        body += "#{h[:alias]} = #{h[:name]} ;   " + e.map {|k,v| "#{k}: #{v}"}.join(", ") + "\n"
+      if result.empty?
+        body = "No results"
+      else
+        result.each do |e|
+          h = e.slice_off!(:name, :alias)
+          body += "#{h[:alias]} = #{h[:name]}  (" + e.map {|k,v| "#{k}: #{v}"}.join(", ") + ")\n" 
+        end
       end
       puts body
     end    

@@ -20,7 +20,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
       test "creates constant aliases" do
         h1 = {'Time'=>'T', 'auto_alias'=>['Date']}
         @manager.create_aliases(:constant, h1)
-        @manager.constant_aliases.should == {'Time'=>'T', 'Date'=>'D'}
+        @manager.alias_map(:constant).should == {'Time'=>'T', 'Date'=>'D'}
       end
     
       test "creates instance method aliases" do
@@ -31,7 +31,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
         ]
         obj = SampleClass.new
         @manager.create_aliases(:instance_method, {'SampleClass'=>{:whoop=>:can_of_wass, :blah=>:bl}})
-        @manager.instance_method_aliases.should == {'SampleClass'=>{:whoop=>:can_of_wass}}
+        @manager.alias_map(:instance_method).should == {'SampleClass'=>{:whoop=>:can_of_wass}}
         SampleClass.new.whoop.should == SampleClass.new.can_of_wass
       end
     
@@ -44,7 +44,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
         hash1 = {'SampleClass'=>{:cap=>:capohow}, 'Array'=>{:blah=>:bl}}
         @manager.create_aliases(:class_method, hash1)
         expected_result = {"SampleClass"=>{:cap=>:capohow}, "Array"=>{}}
-        assert_equal expected_result, @manager.class_method_aliases
+        assert_equal expected_result, @manager.alias_map(:class_method)
         SampleClass.capohow.should == SampleClass.cap
       end
       

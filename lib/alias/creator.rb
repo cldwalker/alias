@@ -6,7 +6,7 @@
 module Alias
   class Creator
     
-    attr_accessor :verbose, :alias_map, :force, :searched_at, :modified_at
+    attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
     def initialize(aliases_hash={})
       self.alias_map = aliases_hash
       @verbose = false
@@ -22,31 +22,28 @@ module Alias
       @alias_map = value
     end
     
-    # Options are:
-    # * :auto_alias : Array of constants to alias by shortest available constant. For example,
-    #   if the constant A already exists, then Aardvark would be aliased to Aa.
-    def self.create(aliases_hash, options={})
-      obj = new(aliases_hash)
-      obj.verbose = options['verbose'] if options['verbose']
-      obj.force = options['force'] if options['force']
-      obj.create(obj.alias_map)
-      if options['auto_alias']
-        obj.alias_map = obj.alias_map.merge(obj.auto_create(options['auto_alias']))
-      end
-      obj
-    end
-    
-    #needs to return generated aliases_hash
     def auto_create(array_to_alias)
       aliases_hash = generate_aliases(array_to_alias)
       create(aliases_hash)
       aliases_hash
     end
     
+    # Options are:
+    # * :auto_alias : Array of constants to alias by shortest available constant. For example,
+    #   if the constant A already exists, then Aardvark would be aliased to Aa.
+    def manager_create(aliases_hash, options = {})
+      self.verbose = options['verbose'] if options['verbose']
+      self.force = options['force'] if options['force']
+      create(aliases_hash)
+      if options['auto_alias']
+        auto_create(options['auto_alias'])
+      end
+    end
+    
     def create(aliases_hash)
       delete_invalid_aliases(aliases_hash)
       delete_existing_aliases(aliases_hash) unless self.force
-      self.alias_map = aliases_hash
+      self.alias_map = alias_map.merge aliases_hash
       
       #td: create method for efficiently removing constants/methods in any namespace
       silence_warnings {
