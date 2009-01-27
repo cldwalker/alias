@@ -30,6 +30,41 @@ call methods as if they were top level keys in the config:
       a.instance_method = {'String'=>{'downcase'=>'dc' }, 'Array'=>{'select'=>'s'}}
     end
 
+== Irb/Console Use
+
+To use in irb or your own console, simply include the console class:
+
+    irb>>include Alias::Console
+    => Object
+
+Currently only two methods are imported: search and create.
+Search lists your aliases and create, well, creates aliases.
+
+Create:
+  
+    irb>>create :constant, "Alias"=>"A"
+    =>nil
+
+    irb>>A
+    =>Alias
+  
+Search:
+    
+    # Searches all alias types for an Alias
+    irb>>search :alias=>'A'
+    A = Alias (type: constant)
+
+    #Searches all alias types for any aliases with an A
+    irb>>search :alias=>/A/
+    A = Alias (type: constant)
+    AB = ActiveRecord::Base (type: constant)
+
+    #Searches only class_method types named 'find'
+    irb>>search :type=>'class_method', :name=>'find'
+    [] = find (type: class_method, class: ActiveRecord::Base)
+  
+
+
 == Configuration
 
 For an example config file see aliases.yml.example.
@@ -67,8 +102,8 @@ See creator.rb for more methods you can hook into.
 
 ==  Todo
 
-* Provide an auto_alias method for creators.
-* Save aliases to file (for console use).
 * Alias/forward methods from one object to another. This will be useful for creating
   'commands' in irb.
+* Provide an auto_alias method for creators.
+* Save aliases to file (for console use).
 * Add more RDoc documentation. 
