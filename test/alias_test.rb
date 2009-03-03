@@ -39,9 +39,10 @@ class AliasTest < Test::Unit::TestCase
     
     test "creates manager object and non-empty aliases" do
       Alias.init :file=>File.join(File.dirname(__FILE__),'aliases.yml')
-      Alias.manager.alias_map(:instance_method)
-      Alias.manager.alias_map(:class_method)
-      Alias.manager.alias_map(:constant)
+      Alias.manager.alias_map(:instance_method).empty?.should be(false)
+      Alias.manager.alias_map(:class_method).empty?.should be(false)
+      Alias.manager.alias_map(:constant).empty?.should be(false)
+      Alias.manager.alias_map(:delegate_to_class_method).empty?.should be(false)
     end
     
     test "with verbose option sets config and manager verbosity" do

@@ -48,6 +48,21 @@ class Alias::ManagerTest < Test::Unit::TestCase
         SampleClass.capohow.should == SampleClass.cap
       end
       
+      test "create delegate to class method aliases" do
+        Kernel.eval %[
+          class ::SampleClass
+            def self.cap; 'itup'; end
+          end
+          module ::SampleModule; end
+        ]
+        aliases = {'SampleModule'=>[['c', 'SampleClass', 'cap'], ['d', 'SampleClass', 'dap']]}
+        @manager.create_aliases(:delegate_to_class_method, aliases)
+        assert_equal aliases, @manager.alias_map(:delegate_to_class_method)
+        # @creator.create_aliases aliases
+        obj = Object.new.extend SampleModule
+        SampleClass.cap.should == obj.c
+      end
+      
       context "search" do
         def setup_search
           @manager.alias_creators = {:constant=>Alias::ConstantCreator.new}

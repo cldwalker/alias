@@ -7,6 +7,7 @@ require 'alias/constant_creator'
 require 'alias/method_creator_helper'
 require 'alias/instance_method_creator'
 require 'alias/class_method_creator'
+require 'alias/delegate_to_class_method_creator'
 require 'alias/core_extensions'
 require 'alias/console'
 
