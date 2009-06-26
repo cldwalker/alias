@@ -16,8 +16,8 @@ module Alias
     end
     
     def create_creator(alias_type)
-      creator_class_string = "Alias::#{alias_type.camelize}Creator"
-      if creator_class = Object.any_const_get(creator_class_string)
+      creator_class_string = "Alias::#{Util.camelize(alias_type)}Creator"
+      if creator_class = Util.any_const_get(creator_class_string)
         creator_class.new
       else
         puts "Creator class '#{creator_class_string}' not found." if @verbose
@@ -29,7 +29,7 @@ module Alias
     def create_aliases(alias_type, aliases_hash)
       if (obj = @alias_creators[alias_type.to_sym] ||= create_creator(alias_type.to_s))
         aliases_hash = aliases_hash.dup
-        create_options = aliases_hash.slice_off!('auto_alias', 'verbose', 'force')
+        create_options = Util.slice_off!(aliases_hash, 'auto_alias', 'verbose', 'force')
         create_options['verbose'] = @verbose unless create_options.has_key?('verbose')
         obj.manager_create(aliases_hash, create_options)        
       end

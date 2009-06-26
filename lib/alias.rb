@@ -8,7 +8,7 @@ require 'alias/method_creator_helper'
 require 'alias/instance_method_creator'
 require 'alias/class_method_creator'
 require 'alias/delegate_to_class_method_creator'
-require 'alias/core_extensions'
+require 'alias/util'
 require 'alias/console'
 
 module Alias
@@ -30,7 +30,7 @@ module Alias
     config.merge! config_hash
     config['verbose'] = options[:verbose] if !options[:verbose].nil?
     
-    block_config = ConfigStruct.block_to_hash(block).stringify_keys
+    block_config = Util.stringify_keys ConfigStruct.block_to_hash(block)
     config.merge! block_config
     manager.verbose = config['verbose'] if config.has_key?('verbose')
     config.each do |k,v|

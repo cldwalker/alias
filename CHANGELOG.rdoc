@@ -1,0 +1,10 @@
+== 0.1.2
+* Added search and console functionality.
+* Added better tests.
+
+== 0.1.1
+* Added checking for existing aliases.
+* Added config block to Alias.init.
+
+== 0.1.0
+* Initial release

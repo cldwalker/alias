@@ -73,7 +73,7 @@ module Alias
     
     def delete_invalid_class_keys(klass_hash)
       klass_hash.each {|k,v| 
-        if Object.any_const_get(k).nil?
+        if Util.any_const_get(k).nil?
           puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}" if self.verbose
           klass_hash.delete(k)
         end

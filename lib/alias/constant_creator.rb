@@ -7,7 +7,7 @@ module Alias
     
     def delete_existing_aliases(aliases_hash)
       aliases_hash.each do |k, v| 
-        if (klass = Object.any_const_get(v)) && ! alias_map.values.include?(v)
+        if (klass = Util.any_const_get(v)) && ! alias_map.values.include?(v)
           aliases_hash.delete(k)
           puts "Alias '#{v}' deleted since the constant already exists" if self.verbose
         end

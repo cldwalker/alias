@@ -19,7 +19,7 @@ module Alias
     
     def delete_invalid_method_keys(alias_hash)
       alias_hash.each do |k, methods|
-        if klass = Object.any_const_get(k)
+        if klass = Util.any_const_get(k)
           methods.keys.each do |e|
             if ! method_exists?(klass,e)
               methods.delete(e)
@@ -32,7 +32,7 @@ module Alias
     
     def delete_existing_method_aliases(aliases_hash)
       aliases_hash.each do |k, methods_hash|
-        if klass = Object.any_const_get(k)
+        if klass = Util.any_const_get(k)
           methods_hash.each do |a,b|
             if method_exists?(klass,b) && !(alias_map[k].is_a?(Hash) && alias_map[k].values.include?(b))
               methods_hash.delete(a)
@@ -68,7 +68,7 @@ module Alias
     def create_method_aliases(aliases)
       aliases ||= {}
       aliases.each { |k,alias_hash|
-        if klass = Object.any_const_get(k)
+        if klass = Util.any_const_get(k)
           create_method_aliases_per_class(klass, alias_hash)
         end
       }

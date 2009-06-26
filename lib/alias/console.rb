@@ -13,7 +13,7 @@ module Alias
     #s 'man', :type=>'instance_method'
     #s /ma/, :raw=>true
     def search(*args)
-      options = args[-1].is_a?(Hash) ? args[-1].slice_off!(:raw, :sort) : {}
+      options = args[-1].is_a?(Hash) ? Util.slice_off!(args[-1], :raw, :sort) : {}
       if args[0] && ! (args[0].is_a?(Hash) && args[0].empty?)
         if args[0].is_a?(String) or args[0].is_a?(Regexp)
           search_hash = {:name=>args[0]}
@@ -46,7 +46,7 @@ module Alias
         body = "No results"
       else
         result.each do |e|
-          h = e.slice_off!(:name, :alias)
+          h = Util.slice_off!(e, :name, :alias)
           body += "#{h[:alias]} = #{h[:name]}  (" + e.map {|k,v| "#{k}: #{v}"}.join(", ") + ")\n" 
         end
       end

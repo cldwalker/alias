@@ -3,7 +3,7 @@ module Alias
     def create_aliases(aliases)
       aliases ||= {}
       aliases.each {|k, array|
-        if klass = Object.any_const_get(k)
+        if klass = Util.any_const_get(k)
           eval_string = ''
           array.each do |aliased_method, delegate_class, delegate_method|
             eval_string += "def #{aliased_method}(*args, &block); #{delegate_class}.__send__(:#{delegate_method}, *args, &block); end\n"
@@ -21,7 +21,7 @@ module Alias
     
     def delete_existing_aliases(aliases_hash)
       aliases_hash.each do |k, aliases_array|
-        if klass = Object.any_const_get(k)
+        if klass = Util.any_const_get(k)
           aliases_array.each_with_index do |(aliased_method, delegate_class, delegate_method), i|
             #td: prevent alias-created aliases from being deleted here
             if instance_method_exists?(klass, aliased_method)
@@ -36,7 +36,7 @@ module Alias
     def delete_invalid_delegate_classes(aliases_hash)
       aliases_hash.each do |k, aliases_array|
         aliases_array.each_with_index do |(aliased_method, delegate_class, delegate_method), i|
-          if Object.any_const_get(delegate_class).nil?
+          if Util.any_const_get(delegate_class).nil?
             puts "deleted nonexistent klass #{delegate_class} #{caller[2].split(/:/)[2]}" if self.verbose
             aliases_array.delete_at(i)
           end
@@ -47,7 +47,7 @@ module Alias
     def delete_invalid_delegate_methods(aliases_hash)
       aliases_hash.each do |k, aliases_array|
         aliases_array.each_with_index do |(aliased_method, delegate_class, delegate_method), i|
-          if klass = Object.any_const_get(delegate_class)
+          if klass = Util.any_const_get(delegate_class)
             if ! class_method_exists?(klass, delegate_method)
               aliases_array.delete_at(i)
               puts "#{klass}: alias to method '#{delegate_method}' deleted since it doesn't exist" if self.verbose
