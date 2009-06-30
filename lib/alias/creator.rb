@@ -5,7 +5,19 @@
 
 module Alias
   class Creator
-    
+    class<<self
+      def delete_existing(key, options={})
+        @delete_existing ||= {}
+        @delete_existing[key] = options[:if].is_a?(Symbol) ? superclass.delete_existing_procs[options[:if]] : options[:if]
+      end
+
+      def delete_existing_procs
+        @delete_existing
+      end
+
+    end
+    delete_existing :constant, :if=>lambda {|e| Util.any_const_get(e[:alias]) }
+
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
     def initialize(aliases_hash={})
       self.alias_map = aliases_hash
@@ -39,8 +51,21 @@ module Alias
         auto_create(options['auto_alias'])
       end
     end
-    
+
     def create(aliases_hash)
+      aliases_array = convert_map(aliases_hash)
+      delete_existing_aliases(aliases_array) unless self.force
+      silence_warnings { create_aliases(aliases_array) }
+    end
+
+    def delete_existing_aliases(arr)
+      arr.delete_if {|e|
+        self.class.delete_existing_procs.any? {|k,v| v.call(e)}
+      }
+      arr
+    end
+    
+    def create2(aliases_hash)
       delete_invalid_aliases(aliases_hash)
       delete_existing_aliases(aliases_hash) unless self.force
       self.alias_map = alias_map.merge aliases_hash
@@ -56,7 +81,7 @@ module Alias
     
     # Should be overridden to delete aliases that already exist. This method can be bypassed by passing
     # a force option to the creator.
-    def delete_existing_aliases(aliases_hash); end
+    # def delete_existing_aliases(aliases_hash); end
     
     # Must be overridden to use create()
     def create_aliases(aliases_hash); 

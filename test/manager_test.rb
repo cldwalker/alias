@@ -20,7 +20,8 @@ class Alias::ManagerTest < Test::Unit::TestCase
       test "creates constant aliases" do
         h1 = {'Time'=>'T', 'auto_alias'=>['Date']}
         @manager.create_aliases(:constant, h1)
-        @manager.alias_map(:constant).should == {'Time'=>'T', 'Date'=>'D'}
+        ::Time.should == ::T
+        ::D.should == ::D
       end
     
       test "creates instance method aliases" do

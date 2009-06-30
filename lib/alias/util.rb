@@ -36,5 +36,22 @@ module Alias
     def camelize(string)
       string.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
     end
+
+    def make_shortest_aliases(unaliased_strings)
+      shortest_aliases = {}
+      possible_alias = ''
+      unaliased_strings.each {|s|
+        possible_alias = ''
+        s.split('').each { |e|
+          possible_alias += e
+          if ! shortest_aliases.values.include?(possible_alias)
+            shortest_aliases[s] = possible_alias
+            break
+          end
+        }
+      }
+
+      shortest_aliases
+    end
   end
 end

@@ -32,5 +32,11 @@ module Alias
     test "camelize should camelize underscored string" do
       Util.camelize('some_test').should == 'SomeTest'
     end
+
+    test "make_shortest_aliases" do
+      eval "::Y = 'some value'"
+      expected_hash = {"Yo"=>"Y", "Man"=>"M", "Cool"=>"C", 'Yay'=>'Ya'}
+      Util.make_shortest_aliases(['Yo','Yay','Cool','Man']).should == expected_hash
+    end
   end
 end
