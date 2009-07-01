@@ -7,7 +7,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
       test "verbosity trickles down to creator objects" do
         h1 = {'String'=>'Strang'}
         @manager.verbose = true
-        @manager.create_aliases(:constant, h1)
+        capture_stdout { @manager.create_aliases(:constant, h1) }.should_not == ''
         assert @manager.alias_creators[:constant].verbose
       end
     

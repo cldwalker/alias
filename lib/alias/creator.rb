@@ -9,11 +9,19 @@ module Alias
       def valid(key, options={}, &proc)
         @validators ||= {}
         if (condition = options[:unless] || options[:if])
-          condition_proc = condition.is_a?(Symbol) ? superclass.validators[condition] : condition
+          condition_proc = condition.is_a?(Symbol) ? superclass.validators[condition].dup : condition
           @validators[key] = options[:unless] ? lambda {|e| ! condition_proc.call(e) } : condition_proc
           $stderr.puts "No validator set for #{key}" unless @validators[key].respond_to?(:call)
         else
           raise ArgumentError, "A :unless or :if option is required."
+        end
+        if @validators[key].respond_to?(:call)
+          if options[:message].is_a?(Proc)
+            @validators[key].instance_eval("class <<self; self; end").send :define_method, :message, options[:message]
+          elsif !@validators[key].respond_to?(:message)
+            @validators[key].instance_eval %[def self.message(obj); "Validation failed for #{self}'s #{key}" ; end]
+          end
+          @validators[key].instance_eval("class <<self; self; end").send(:define_method, :args , lambda{ options[:with]}) if options[:with]
         end
       end
 
@@ -37,8 +45,13 @@ module Alias
         (klass = any_const_get(klass)) && klass.respond_to?(method)
       end
     end
-    valid :constant, :if=>lambda {|e| any_const_get(e) }
-    valid :class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) }
+    valid :constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Deleted nonexistent constant #{e}"}
+    valid :class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) },
+      :message=>lambda {|e| "Deleted nonexistent class #{e}"}
+    valid :instance_method, :if=> lambda {|e| instance_method?(*e) }
+      #:message=>"%klass: alias to method '%aliased_method' deleted since it already exists"
+    valid :class_method, :if=>lambda {|e| class_method?(*e) }
+      #:message=>"%klass: alias to method '%aliased_method' deleted since it doesn't exist"
 
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
     def initialize(options={})
@@ -85,7 +98,10 @@ module Alias
     def delete_invalid_aliases(arr)
       arr.delete_if {|e|
         !self.class.validators.select {|k,v| !(k == :alias && self.force)}.all? {|k,v|
-          e.has_key?(k) ? v.call(e[k]) : v.call(e)
+          args = v.respond_to?(:args) ? v.args.map {|f| e[f] } : (e[k] || e)
+          result = v.call(args)
+          puts v.message(args) if result != true && self.verbose
+          result
         }
       }
     end
