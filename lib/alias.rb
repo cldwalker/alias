@@ -1,6 +1,6 @@
 $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__))
 require 'yaml'
-require 'config_struct'
+require 'alias/hash_struct'
 require 'alias/manager'
 require 'alias/creator'
 require 'alias/constant_creator'
@@ -29,7 +29,7 @@ module Alias
     config.merge! config_hash
     config['verbose'] = options[:verbose] if !options[:verbose].nil?
     
-    block_config = Util.stringify_keys ConfigStruct.block_to_hash(block)
+    block_config = Util.stringify_keys HashStruct.block_to_hash(block)
     config.merge! block_config
     manager.verbose = config['verbose'] if config.has_key?('verbose')
     config.each do |k,v|
