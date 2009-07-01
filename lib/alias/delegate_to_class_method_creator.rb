@@ -2,9 +2,9 @@ module Alias
   class DelegateToClassMethodCreator < Creator
     valid :class, :if=>:class
     valid :delegate_class, :if=>:class
-    valid :aliased_method, :unless=>lambda {|e| (klass = any_const_get(e[:class])) && klass.method_defined?(e[:alias]) },
+    valid :aliased_method, :unless=>lambda {|e| instance_method?(e[:class], e[:alias]) },
       :message=>"%klass: alias to method '%aliased_method' deleted since it already exists"
-    valid :delegate_method, :if=>lambda {|e| (klass = any_const_get(e[:delegate_class])) && klass.respond_to?(e[:delegate_name]) },
+    valid :delegate_method, :if=>lambda {|e| class_method?(e[:delegate_class], e[:delegate_name]) },
       :message=>"%klass: alias to method '%aliased_method' deleted since it doesn't exist"
 
     def convert_map(aliases_hash)

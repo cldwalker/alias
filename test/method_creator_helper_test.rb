@@ -30,30 +30,5 @@ class Alias::MethodCreatorHelperTest < Test::Unit::TestCase
       @creator.alias_map = {'String'=>{'name'=>'n'}}
       @creator.to_searchable_array.should == [{:name=>'name', :alias=>'n', :class=>'String'}]
     end
-  end
-  
-  context "InstanceMethodCreator" do
-    before(:each) { @creator = Alias::InstanceMethodCreator.new }
-    
-    test "deletes existing instance method aliases" do
-      h1 = {'String'=>{'strip'=>'st', 'chomp'=>'chop'}}
-      @creator.delete_existing_method_aliases(h1)
-      h1.should == {"String"=>{"strip"=>"st"}}
-    end
-    
-    test "deletes existing instance method unless it was created by the object" do
-      h1 = {'String'=>{'downcase'=>'d'}}
-      @creator.create(h1)
-      assert_not_equal 'bh', 'blah'.d
-      h2 = {'String'=>{'delete'=>'d'}}
-      @creator.create(h2)
-      assert_equal 'bh', 'blah'.d('la')
-    end
-  
-    test "deletes invalid instance method keys" do
-      h1 = {'String'=>{'strip'=>'st'},'Array'=>{'blah', 'bl'}}
-      @creator.delete_invalid_method_keys(h1)
-      h1.should == {"Array"=>{}, "String"=>{"strip"=>"st"}}
-    end
-  end
+  end  
 end

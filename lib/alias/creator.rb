@@ -28,6 +28,14 @@ module Alias
       def class_cache
         @class_cache ||= {}
       end
+
+      def instance_method?(klass, method)
+        (klass = any_const_get(klass)) && klass.method_defined?(method)
+      end
+
+      def class_method?(klass, method)
+        (klass = any_const_get(klass)) && klass.respond_to?(method)
+      end
     end
     valid :constant, :if=>lambda {|e| any_const_get(e) }
     valid :class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) }
@@ -100,7 +108,7 @@ module Alias
     def to_searchable_array
       convert_map(@alias_map)
     end
-    
+
     private
     def any_const_get(klass)
       Creator.any_const_get(klass)

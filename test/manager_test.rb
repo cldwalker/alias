@@ -17,18 +17,6 @@ class Alias::ManagerTest < Test::Unit::TestCase
         assert @manager.alias_creators[:constant].force
       end
     
-      test "creates instance method aliases" do
-        Kernel.eval %[
-          class ::SampleClass
-            def whoop; 'WHOOP'; end
-          end
-        ]
-        obj = SampleClass.new
-        @manager.create_aliases(:instance_method, {'SampleClass'=>{:whoop=>:can_of_wass, :blah=>:bl}})
-        @manager.alias_map(:instance_method).should == {'SampleClass'=>{:whoop=>:can_of_wass}}
-        SampleClass.new.whoop.should == SampleClass.new.can_of_wass
-      end
-    
       test "creates class method aliases" do
         Kernel.eval %[
           class ::SampleClass

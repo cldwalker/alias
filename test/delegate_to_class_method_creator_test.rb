@@ -1,7 +1,6 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 class Alias::DelegateToMethodCreatorTest < Test::Unit::TestCase
-  before(:each) { @creator = Alias::DelegateToClassMethodCreator.new }
   context "DelegateToClassMethodCreator" do
     before(:each) { @manager = Alias::Manager.new }
     def convert_map(hash)
@@ -50,6 +49,7 @@ class Alias::DelegateToMethodCreatorTest < Test::Unit::TestCase
   end
   
   test "to_searchable_array is an array of hashes" do
+    @creator = Alias::DelegateToClassMethodCreator.new
     @creator.alias_map = {'String'=>{'AnotherString.name'=>'n'}}
     @creator.to_searchable_array.should == [{:delegate_name=>'name', :alias=>'n', :class=>'String', :delegate_class=>'AnotherString'}]
   end
