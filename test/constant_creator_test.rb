@@ -6,25 +6,36 @@ class Alias::ConstantCreatorTest < Test::Unit::TestCase
     def convert_map(hash)
       Alias::ConstantCreator.new.convert_map(hash)
     end
+
+    def create_aliases(hash)
+      @manager.create_aliases(:constant, hash)
+    end
+
+    def expect_aliases(hash)
+      Alias::ConstantCreator.any_instance.expects(:create_aliases).with(convert_map(hash))
+    end
     
     test "deletes existing aliases" do
-      h1 = {"Alias::ConstantCreator"=>"Alias::Creator", "Array"=>"Ar"}
-      Alias::ConstantCreator.any_instance.expects(:create_aliases).with(convert_map({"Array"=>"Ar"}))
-      @manager.create_aliases(:constant, h1)
+      expect_aliases "Array"=>'Ar'
+      create_aliases "Alias::ConstantCreator"=>"Alias::Creator", "Array"=>"Ar"
     end
 
     test "deletes existing aliases unless force option" do
       h1 = {"Alias::ConstantCreator"=>"Alias::Creator", "Array"=>"Ar"}
-      Alias::ConstantCreator.any_instance.expects(:create_aliases).with(convert_map(h1))
-      @manager.create_aliases(:constant, h1.merge('force'=>true))
+      expect_aliases h1
+      create_aliases h1.merge('force'=>true)
     end
 
     test "deletes invalid classes" do
       eval "module ::Bling; end"
-      @manager = Alias::Manager.new
-      h1 = {"Blah"=>"Bling", "Array"=>"Ar"}
-      Alias::ConstantCreator.any_instance.expects(:create_aliases).with(convert_map({"Array"=>"Ar"}))
-      @manager.create_aliases(:constant, h1)
+      expect_aliases 'Array'=>'Ar'
+      create_aliases "Blah"=>"Bling", "Array"=>"Ar"
+    end
+
+    test "creates aliases" do
+      create_aliases 'Time'=>'T', 'auto_alias'=>['Date']
+      ::Time.should == ::T
+      ::D.should == ::D
     end
 
     # TODO: need access to alias_map 

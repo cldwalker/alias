@@ -17,13 +17,6 @@ class Alias::ManagerTest < Test::Unit::TestCase
         assert @manager.alias_creators[:constant].force
       end
     
-      test "creates constant aliases" do
-        h1 = {'Time'=>'T', 'auto_alias'=>['Date']}
-        @manager.create_aliases(:constant, h1)
-        ::Time.should == ::T
-        ::D.should == ::D
-      end
-    
       test "creates instance method aliases" do
         Kernel.eval %[
           class ::SampleClass
@@ -47,21 +40,6 @@ class Alias::ManagerTest < Test::Unit::TestCase
         expected_result = {"SampleClass"=>{:cap=>:capohow}, "Array"=>{}}
         assert_equal expected_result, @manager.alias_map(:class_method)
         SampleClass.capohow.should == SampleClass.cap
-      end
-      
-      test "create delegate to class method aliases" do
-        Kernel.eval %[
-          class ::SampleClass
-            def self.cap; 'itup'; end
-          end
-          module ::SampleModule; end
-        ]
-        aliases = {'SampleModule'=>[['c', 'SampleClass', 'cap'], ['d', 'SampleClass', 'dap']]}
-        @manager.create_aliases(:delegate_to_class_method, aliases)
-        assert_equal aliases, @manager.alias_map(:delegate_to_class_method)
-        # @creator.create_aliases aliases
-        obj = Object.new.extend SampleModule
-        SampleClass.cap.should == obj.c
       end
       
       context "search" do

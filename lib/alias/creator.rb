@@ -23,6 +23,7 @@ module Alias
 
     end
     valid :constant, :if=>lambda {|e| Util.any_const_get(e) }
+    valid :class, :if=>lambda {|e| ((klass = Util.any_const_get(e)) && klass.is_a?(Module)) }
 
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
     def initialize(aliases_hash={})
@@ -69,7 +70,7 @@ module Alias
     def delete_invalid_aliases(arr)
       arr.delete_if {|e|
         !self.class.validators.select {|k,v| !(k == :alias && self.force)}.all? {|k,v|
-          v.call(e[k])
+          e.has_key?(k) ? v.call(e[k]) : v.call(e)
         }
       }
     end

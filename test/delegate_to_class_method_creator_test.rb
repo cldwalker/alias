@@ -2,27 +2,55 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 class Alias::DelegateToMethodCreatorTest < Test::Unit::TestCase
   before(:each) { @creator = Alias::DelegateToClassMethodCreator.new }
-  
-  test "deletes invalid delegate classes" do
-    h1 = {'String'=>[['n', 'AnotherString', 'name'], ['s', 'String', 'to_s']]}
-    @creator.delete_invalid_delegate_classes(h1)
-    h1.should == {"String"=>[["s", "String", "to_s"]]}
-  end
-  
-  test "deletes invalid delegate methods" do
-    h1 = {'QuickDate'=>[['c', 'Date', 'civil'], ['uc', 'Date', 'uncivil']]}
-    @creator.delete_invalid_delegate_methods(h1)
-    h1.should == {"QuickDate"=>[["c", "Date", "civil"]]}
-  end
-  
-  test "deletes existing method aliases" do
-    h1 = {'String'=>[['strip', 'Date', 'civil'], ['s', 'Date', 'civil']]}
-    @creator.delete_existing_aliases(h1)
-    h1.should == {"String"=>[["s", "Date", "civil"]]}
+  context "DelegateToClassMethodCreator" do
+    before(:each) { @manager = Alias::Manager.new }
+    def convert_map(hash)
+      Alias::DelegateToClassMethodCreator.new.convert_map(hash)
+    end
+
+    def expect_aliases(hash)
+      Alias::DelegateToClassMethodCreator.any_instance.expects(:create_aliases).with(convert_map(hash))
+    end
+
+    def create_aliases(hash)
+      @manager.create_aliases(:delegate_to_class_method, hash)
+    end
+
+    test "deletes invalid delegate classes" do
+      expect_aliases 'String'=>{'String.to_s'=>'s'}
+      create_aliases 'String'=>{'AnotherString.name'=>'n', 'String.to_s'=>'s'}
+    end
+
+    test "deletes invalid classes" do
+      expect_aliases 'String'=>{'String.to_s'=>'s'}
+      create_aliases 'String'=>{'String.to_s'=>'s'}, 'AnotherString'=>{'String.to_s'=>'s'}
+    end
+
+    test "deletes existing method aliases" do
+      expect_aliases 'String'=>{'Date.commercial'=>'s'}
+      create_aliases 'String'=>{'Date.civil'=>'strip', 'Date.commercial'=>'s'}
+    end
+
+    test "deletes invalid delegate methods" do
+      expect_aliases 'String'=>{'Date.civil'=>'c'}
+      create_aliases 'String'=>{'Date.civil'=>'c', 'Date.uncivil'=>'uc'}
+    end
+
+    test "creates aliases" do
+      Kernel.eval %[
+        class ::SampleClass
+          def self.cap; 'itup'; end
+        end
+        module ::SampleModule; end
+      ]
+      create_aliases 'SampleModule'=>{'SampleClass.cap'=>'c', 'Sampleclass.dap'=>'d'}
+      obj = Object.new.extend SampleModule
+      SampleClass.cap.should == obj.c
+    end
   end
   
   test "to_searchable_array is an array of hashes" do
-    @creator.alias_map = {'String'=>[['n', 'AnotherString', 'name']]}
+    @creator.alias_map = {'String'=>{'AnotherString.name'=>'n'}}
     @creator.to_searchable_array.should == [{:delegate_name=>'name', :alias=>'n', :class=>'String', :delegate_class=>'AnotherString'}]
   end
 
