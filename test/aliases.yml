@@ -11,6 +11,4 @@ instance_method:
       bling: bl
 delegate_to_class_method:
   String:
-    - - civ
-      - Date
-      - civil
+    Date.civil: civ

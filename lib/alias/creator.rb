@@ -41,8 +41,8 @@ module Alias
     valid :class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) }
 
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
-    def initialize(aliases_hash={})
-      self.alias_map = aliases_hash
+    def initialize(options={})
+      self.alias_map = []
       @verbose = false
       @force = false
     end
@@ -77,8 +77,8 @@ module Alias
     def create(aliases_hash)
       aliases_array = convert_map(aliases_hash)
       delete_invalid_aliases(aliases_array)
-      # TODO: self.alias_map = alias_map.merge aliases_hash
-      #td: create method for efficiently removing constants/methods in any namespace
+      self.alias_map = alias_map + aliases_array
+      #TODO: create method for efficiently removing constants/methods in any namespace
       silence_warnings { create_aliases(aliases_array) }
     end
 
