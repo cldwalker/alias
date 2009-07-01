@@ -21,9 +21,16 @@ module Alias
         @validators
       end
 
+      def any_const_get(klass)
+        Creator.class_cache[klass] ||= Util.any_const_get(klass)
+      end
+
+      def class_cache
+        @class_cache ||= {}
+      end
     end
-    valid :constant, :if=>lambda {|e| Util.any_const_get(e) }
-    valid :class, :if=>lambda {|e| ((klass = Util.any_const_get(e)) && klass.is_a?(Module)) }
+    valid :constant, :if=>lambda {|e| any_const_get(e) }
+    valid :class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) }
 
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
     def initialize(aliases_hash={})
@@ -94,16 +101,11 @@ module Alias
       convert_map(@alias_map)
     end
     
-    def delete_invalid_class_keys(klass_hash)
-      klass_hash.each {|k,v| 
-        if Util.any_const_get(k).nil?
-          puts "deleted nonexistent klass #{k} #{caller[2].split(/:/)[2]}" if self.verbose
-          klass_hash.delete(k)
-        end
-      }
-    end
-    
     private
+    def any_const_get(klass)
+      Creator.any_const_get(klass)
+    end
+
     def silence_warnings
       old_verbose, $VERBOSE = $VERBOSE, nil
       yield
