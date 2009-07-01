@@ -17,19 +17,6 @@ class Alias::ManagerTest < Test::Unit::TestCase
         assert @manager.alias_creators[:constant].force
       end
     
-      test "creates class method aliases" do
-        Kernel.eval %[
-          class ::SampleClass
-            def self.cap; 'itup'; end
-          end
-        ]
-        hash1 = {'SampleClass'=>{:cap=>:capohow}, 'Array'=>{:blah=>:bl}}
-        @manager.create_aliases(:class_method, hash1)
-        expected_result = {"SampleClass"=>{:cap=>:capohow}, "Array"=>{}}
-        assert_equal expected_result, @manager.alias_map(:class_method)
-        SampleClass.capohow.should == SampleClass.cap
-      end
-      
       context "search" do
         def setup_search
           @manager.alias_creators = {:constant=>Alias::ConstantCreator.new}
