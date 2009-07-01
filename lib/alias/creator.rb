@@ -6,17 +6,23 @@
 module Alias
   class Creator
     class<<self
-      def delete_existing(key, options={})
-        @delete_existing ||= {}
-        @delete_existing[key] = options[:if].is_a?(Symbol) ? superclass.delete_existing_procs[options[:if]] : options[:if]
+      def valid(key, options={}, &proc)
+        @validators ||= {}
+        if (condition = options[:unless] || options[:if])
+          condition_proc = condition.is_a?(Symbol) ? superclass.validators[condition] : condition
+          @validators[key] = options[:unless] ? lambda {|e| ! condition_proc.call(e) } : condition_proc
+          $stderr.puts "No validator set for #{key}" unless @validators[key].respond_to?(:call)
+        else
+          raise ArgumentError, "A :unless or :if option is required."
+        end
       end
 
-      def delete_existing_procs
-        @delete_existing
+      def validators
+        @validators
       end
 
     end
-    delete_existing :constant, :if=>lambda {|e| Util.any_const_get(e[:alias]) }
+    valid :constant, :if=>lambda {|e| Util.any_const_get(e) }
 
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
     def initialize(aliases_hash={})
@@ -54,35 +60,25 @@ module Alias
 
     def create(aliases_hash)
       aliases_array = convert_map(aliases_hash)
-      delete_existing_aliases(aliases_array) unless self.force
+      delete_invalid_aliases(aliases_array)
+      # TODO: self.alias_map = alias_map.merge aliases_hash
+      #td: create method for efficiently removing constants/methods in any namespace
       silence_warnings { create_aliases(aliases_array) }
     end
 
-    def delete_existing_aliases(arr)
+    def delete_invalid_aliases(arr)
       arr.delete_if {|e|
-        self.class.delete_existing_procs.any? {|k,v| v.call(e)}
-      }
-      arr
-    end
-    
-    def create2(aliases_hash)
-      delete_invalid_aliases(aliases_hash)
-      delete_existing_aliases(aliases_hash) unless self.force
-      self.alias_map = alias_map.merge aliases_hash
-      
-      #td: create method for efficiently removing constants/methods in any namespace
-      silence_warnings {
-        create_aliases(aliases_hash)
+        !self.class.validators.select {|k,v| !(k == :alias && self.force)}.all? {|k,v|
+          v.call(e[k])
+        }
       }
     end
-    
-    # Should be overridden to delete aliases that point to invalid/nonexistent classes, methods ...
-    def delete_invalid_aliases(aliases_hash); end
-    
-    # Should be overridden to delete aliases that already exist. This method can be bypassed by passing
-    # a force option to the creator.
-    # def delete_existing_aliases(aliases_hash); end
-    
+
+    # Must be overridden to use create()
+    def convert_map(aliases_hash); 
+      raise "This abstract method must be overridden."
+    end
+
     # Must be overridden to use create()
     def create_aliases(aliases_hash); 
       raise "This abstract method must be overridden."
@@ -93,8 +89,9 @@ module Alias
       raise "This abstract method must be overridden."
     end
     
-    #Should be overridden to support search
-    def to_searchable_array; []; end
+    def to_searchable_array
+      convert_map(@alias_map)
+    end
     
     def delete_invalid_class_keys(klass_hash)
       klass_hash.each {|k,v| 
