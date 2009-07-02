@@ -2,7 +2,7 @@ module Alias
   class DelegateToClassMethodCreator < Creator
     valid :class, :if=>:class
     valid :delegate_class, :if=>:class
-    valid :aliased_method, :unless=>:instance_method, :with=>[:class, :alias]
+    valid :alias, :unless=>:instance_method, :with=>[:class, :alias]
     valid :delegate_method, :if=>:class_method, :with=>[:delegate_class, :delegate_name]
 
     def convert_map(aliases_hash)

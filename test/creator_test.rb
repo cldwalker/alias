@@ -45,6 +45,47 @@ class Alias::CreatorTest < Test::Unit::TestCase
       @creator.alias_map = {'blah'=>'b'}
       @creator.modified_at.should == stub_time
     end
-    
   end
+
+  context "valid" do
+    before(:all) { eval "class ::TestCreator < Alias::Creator; end"}
+    before(:each) { Alias::Creator.instance_eval "@validators = {}"}
+    test "raises ArgumentError when no validator is given" do
+      assert_raises(ArgumentError) { TestCreator.valid :name }
+    end
+
+    test "prints error and deletes validator when invalid one is given" do
+      capture_stderr { TestCreator.valid(:name, :if=>:blah) }.should =~ /not set/
+      TestCreator.validators[:name].should == nil
+    end
+
+    test "copies a validator when using a previous one" do
+      Alias::Creator.valid :method, :if=>lambda { 'yo'}
+      TestCreator.valid :method, :if=>:method
+      Alias::Creator.validators[:method].object_id.should_not == TestCreator.validators[:method].object_id
+      Alias::Creator.validators[:method].call.should == TestCreator.validators[:method].call
+    end
+
+    test "inherits a validator's message when using a previous one" do
+      Alias::Creator.valid :num, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}
+      TestCreator.valid :num, :if=>:num
+      TestCreator.validators[:num].message({}).should == 'cool'
+    end
+
+    test "overrides an inherited message with explicit message" do
+      Alias::Creator.valid :num, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}
+      TestCreator.valid :num, :if=>:num, :message=>lambda {|e| 'cooler'}
+      TestCreator.validators[:num].message({}).should == 'cooler'
+    end
+
+    test "sets a default message if an invalid one is given" do
+      TestCreator.valid :num, :if=>lambda {|e| 'yo'}, :message=>:blah
+      TestCreator.validators[:num].message({}).should =~ /Validation failed/
+    end
+
+    test "with :with option sets with method" do
+      TestCreator.valid :num, :if=>lambda {|e| 'yo'}, :with=>[:num, :name]
+      TestCreator.validators[:num].with.should == [:num, :name]
+    end
+  end  
 end
