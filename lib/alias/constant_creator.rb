@@ -1,6 +1,6 @@
 module Alias
   class ConstantCreator < Creator
-    valid :alias, :unless=>:constant
+    valid :alias, :unless=>:constant, :optional=>true
     valid :name, :if=>:constant
 
     def create_aliases(arr)

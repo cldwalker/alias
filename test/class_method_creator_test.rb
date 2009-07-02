@@ -28,16 +28,6 @@ class Alias::ClassMethodCreatorTest < Test::Unit::TestCase
       create_aliases 'Date'=>{'civil_to_jd'=>'civil', 'valid_time?'=>'vt'}
     end
 
-    # TODO: alias map
-    # test "deletes existing class method unless it was created by the object" do
-    #   h1 = {'String'=>{'name'=>'n'}}
-    #   @creator.create(h1)
-    #   assert_not_equal 'blah', String.n
-    #   h2 = {'String'=>{'new'=>'n'}}
-    #   @creator.create(h2)
-    #   assert_equal 'blah', String.n('blah')
-    # end
-    
     test "creates class method aliases" do
       Kernel.eval %[
         class ::SampleClass

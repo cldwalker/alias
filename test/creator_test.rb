@@ -51,8 +51,8 @@ class Alias::CreatorTest < Test::Unit::TestCase
     before(:all) { eval "class ::TestCreator < Alias::Creator; end"}
     before(:each) { Alias::Creator.instance_eval "@validators = {}"}
 
-    def validate
-      @validator.validate(TestCreator.new, {}, :blah)
+    def validate(options={})
+      @validator.validate(TestCreator.new(options), {}, :blah)
     end
 
     def validator_message
@@ -109,6 +109,16 @@ class Alias::CreatorTest < Test::Unit::TestCase
       create_validator :unless=>lambda {|e| true }, :message=>lambda {|e| "yo doesn't exist"}
       validate.should == false
       validator_message.should == 'yo exists'
+    end
+
+    test "with :optional option can be forced" do
+      create_validator :if=>lambda { false }, :optional=>true
+      validate(:force=>true).should == true
+    end
+
+    test "without :optional option cannot be forced" do
+      create_validator :if=>lambda { false }
+      validate(:force=>true).should == false
     end
   end  
 end

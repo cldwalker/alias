@@ -67,7 +67,7 @@ module Alias
     def initialize(options={})
       self.alias_map = []
       @verbose = false
-      @force = false
+      @force = options[:force] || false
     end
     
     def modified_since_last_search?
@@ -106,9 +106,9 @@ module Alias
     end
 
     def delete_invalid_aliases(arr)
-      arr.delete_if {|e|
-        !self.class.validators.select {|k,v| !(k == :alias && self.force)}.all? {|k,v|
-          v.validate(self, e, k)
+      arr.delete_if {|aliasee|
+        !self.class.validators.all? {|attribute, validator|
+          validator.validate(self, aliasee, attribute)
         }
       }
     end

@@ -2,7 +2,7 @@ module Alias
   class ClassMethodCreator < Creator
     valid :class, :if=>:class
     valid :class_method, :if=>:class_method, :with=>[:class, :name]
-    valid :alias, :unless=>:class_method, :with=>[:class, :alias]
+    valid :alias, :unless=>:class_method, :with=>[:class, :alias], :optional=>true
 
     def convert_map(hash)
       hash.inject([]) {|t,(klass,aliases)|
