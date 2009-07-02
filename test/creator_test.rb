@@ -87,5 +87,11 @@ class Alias::CreatorTest < Test::Unit::TestCase
       TestCreator.valid :num, :if=>lambda {|e| 'yo'}, :with=>[:num, :name]
       TestCreator.validators[:num].with.should == [:num, :name]
     end
+
+    test "with :unless option negates result and changes message" do
+      TestCreator.valid :num, :unless=>lambda {|e| true }, :message=>lambda {|e| "yo doesn't exist"}
+      TestCreator.validators[:num].call({}).should == false
+      TestCreator.validators[:num].message({}).should == "yo exists"
+    end
   end  
 end

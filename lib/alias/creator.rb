@@ -34,9 +34,15 @@ module Alias
           raise ArgumentError, "A :unless or :if option is required."
         end
         if options[:message].is_a?(Proc)
-          @validators[key].instance_eval("class <<self; self; end").send :define_method, :message, options[:message]
+          message = options[:unless] ? lambda {|e| options[:message].call(e).gsub("doesn't exist", 'exists') } : options[:message]
+          @validators[key].instance_eval("class <<self; self; end").send :define_method, :message, message
         elsif !@validators[key].respond_to?(:message)
-          @validators[key].instance_eval %[def self.message(obj); "Validation failed for #{self}'s #{key}" ; end]
+          @validators[key].instance_eval %[def self.message(obj); "Validation failed for #{self}'s #{key} since it doesn't exist" ; end]
+        end
+        if options[:unless]
+          @validators[key].instance_eval("class <<self; self; end").send :alias_method, :old_message, :message
+          @validators[key].instance_eval("class <<self; self; end").send :define_method, :message, 
+            lambda {|e| old_message(e).gsub("doesn't exist", 'exists') }
         end
         @validators[key].instance_eval("class <<self; self; end").send(:define_method, :with, lambda{ options[:with]}) if options[:with]
       end
@@ -61,16 +67,12 @@ module Alias
       def class_method?(klass, method)
         (klass = any_const_get(klass)) && klass.respond_to?(method)
       end
-
-      def method_message(klass, method, method_type, negate=false)
-        %[#{klass}: #{method_type} method '#{method}' deleted since it #{negate ? "doesn't" : 'does'} exist]
-      end
       #:startdoc:
     end
 
-    valid :constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Deleted nonexistent constant #{e}"}
+    valid :constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Constant '#{e}' deleted since it doesn't exist"}
     valid :class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) },
-      :message=>lambda {|e| "Deleted nonexistent class #{e}"}
+      :message=>lambda {|e| "Class '#{e}' deleted since it doesn't exist"}
     valid :instance_method, :if=> lambda {|e| instance_method?(*e) },
       :message=>lambda {|e| "#{e[0]}: instance method '#{e[1]}' deleted since it doesn't exist" }
     valid :class_method, :if=>lambda {|e| class_method?(*e) },

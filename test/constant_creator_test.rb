@@ -3,16 +3,14 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 class Alias::ConstantCreatorTest < Test::Unit::TestCase
   context "AliasConstantCreator" do
     before(:each) { @manager = Alias::Manager.new }
-    def convert_map(hash)
-      Alias::ConstantCreator.new.convert_map(hash)
-    end
 
     def create_aliases(hash)
       @manager.create_aliases(:constant, hash)
     end
 
     def expect_aliases(hash)
-      Alias::ConstantCreator.any_instance.expects(:create_aliases).with(convert_map(hash))
+      arr = Alias::ConstantCreator.new.convert_map(hash)
+      Alias::ConstantCreator.any_instance.expects(:create_aliases).with(arr)
     end
     
     test "deletes existing aliases" do
@@ -37,17 +35,6 @@ class Alias::ConstantCreatorTest < Test::Unit::TestCase
       ::Time.should == ::T
       ::D.should == ::D
     end
-
-    # TODO: need access to alias_map 
-    # test "deletes existing alias unless it was created by the object" do
-    #   h1 = {"Array"=>"A"}
-    #   @creator.create(h1)
-    #   assert_not_equal A, ArgumentError
-    #   h2 = {"ArgumentError"=>"A"}
-    #   @creator.create(h2)
-    #   assert_equal A, ArgumentError
-    # end
-    
   end
 
   test "to_searchable_array is an array of hashes" do

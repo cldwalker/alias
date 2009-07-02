@@ -1,6 +1,6 @@
 module Alias
   class ConstantCreator < Creator
-    valid :alias, :unless=>:constant, :message=>lambda {|e| "Alias #{e} deleted since it already exists."}
+    valid :alias, :unless=>:constant
     valid :name, :if=>:constant
 
     def create_aliases(arr)

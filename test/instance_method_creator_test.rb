@@ -22,16 +22,6 @@ class Alias::InstanceMethodCreatorTest < Test::Unit::TestCase
       create_aliases "String"=>{'strip','st'}, 'Blah'=>{'map'=>'m'}
     end
 
-    #TODO: with alias_map
-    # test "deletes existing instance method unless it was created by the object" do
-    #   h1 = {'String'=>{'downcase'=>'d'}}
-    #   @creator.create(h1)
-    #   assert_not_equal 'bh', 'blah'.d
-    #   h2 = {'String'=>{'delete'=>'d'}}
-    #   @creator.create(h2)
-    #   assert_equal 'bh', 'blah'.d('la')
-    # end
-  
     test "deletes invalid instance method keys" do
       expect_aliases "Array"=>{}, "String"=>{"strip"=>"st"}
       create_aliases 'String'=>{'strip'=>'st'},'Array'=>{'blah', 'bl'}
