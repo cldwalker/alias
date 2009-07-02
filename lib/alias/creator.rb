@@ -22,29 +22,14 @@ module Alias
       #          and message procs as an array.
       def valid(key, options={})
         @validators ||= {}
-        if (condition = options[:unless] || options[:if])
-          condition_proc = Creator.validators[condition] ? Creator.validators[condition].clone : condition
-          @validators[key] = options[:unless] ? lambda {|e| ! condition_proc.call(e) } : condition_proc
-          unless @validators[key].respond_to?(:call)
-            $stderr.puts "Validator not set for #{key}"
-            @validators.delete(key)
-            return
-          end
-        else
+        begin
+          @validators[key] = Validator.new(options.merge(:key=>key, :creator=>self))
+        rescue Validator::MissingConditionError
           raise ArgumentError, "A :unless or :if option is required."
+        rescue Validator::InvalidValidatorError
+          $stderr.puts "Validator not set for #{key}"
+          @validators.delete(key)
         end
-        if options[:message].is_a?(Proc)
-          message = options[:unless] ? lambda {|e| options[:message].call(e).gsub("doesn't exist", 'exists') } : options[:message]
-          @validators[key].instance_eval("class <<self; self; end").send :define_method, :message, message
-        elsif !@validators[key].respond_to?(:message)
-          @validators[key].instance_eval %[def self.message(obj); "Validation failed for #{self}'s #{key} since it doesn't exist" ; end]
-        end
-        if options[:unless]
-          @validators[key].instance_eval("class <<self; self; end").send :alias_method, :old_message, :message
-          @validators[key].instance_eval("class <<self; self; end").send :define_method, :message, 
-            lambda {|e| old_message(e).gsub("doesn't exist", 'exists') }
-        end
-        @validators[key].instance_eval("class <<self; self; end").send(:define_method, :with, lambda{ options[:with]}) if options[:with]
       end
 
       #:nodoc:
@@ -123,10 +108,7 @@ module Alias
     def delete_invalid_aliases(arr)
       arr.delete_if {|e|
         !self.class.validators.select {|k,v| !(k == :alias && self.force)}.all? {|k,v|
-          args = v.respond_to?(:with) ? v.with.map {|f| e[f] } : (e[k] || e)
-          result = v.call(args)
-          puts v.message(args) if result != true && self.verbose
-          result
+          v.validate(self, e, k)
         }
       }
     end

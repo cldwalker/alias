@@ -2,6 +2,7 @@ $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__))
 require 'yaml'
 require 'alias/hash_struct'
 require 'alias/manager'
+require 'alias/validator'
 require 'alias/creator'
 require 'alias/constant_creator'
 require 'alias/instance_method_creator'

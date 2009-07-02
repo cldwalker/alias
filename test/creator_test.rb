@@ -50,6 +50,23 @@ class Alias::CreatorTest < Test::Unit::TestCase
   context "valid" do
     before(:all) { eval "class ::TestCreator < Alias::Creator; end"}
     before(:each) { Alias::Creator.instance_eval "@validators = {}"}
+
+    def validate
+      @validator.validate(TestCreator.new, {}, :blah)
+    end
+
+    def validator_message
+      @validator.create_message(:blah)
+    end
+
+    def create_validator(options)
+      @validator = TestCreator.valid :num, options
+    end
+
+    def create_parent_validator(key)
+      @parent_validator = Alias::Creator.valid key, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}
+    end
+
     test "raises ArgumentError when no validator is given" do
       assert_raises(ArgumentError) { TestCreator.valid :name }
     end
@@ -60,38 +77,38 @@ class Alias::CreatorTest < Test::Unit::TestCase
     end
 
     test "copies a validator when using a previous one" do
-      Alias::Creator.valid :method, :if=>lambda { 'yo'}
-      TestCreator.valid :method, :if=>:method
-      Alias::Creator.validators[:method].object_id.should_not == TestCreator.validators[:method].object_id
-      Alias::Creator.validators[:method].call.should == TestCreator.validators[:method].call
+      create_parent_validator :num
+      create_validator :if=>:num
+      @parent_validator.validate(Alias::Creator.new, {}, :blah).should == validate
     end
 
     test "inherits a validator's message when using a previous one" do
-      Alias::Creator.valid :num, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}
-      TestCreator.valid :num, :if=>:num
-      TestCreator.validators[:num].message({}).should == 'cool'
+      create_parent_validator :num
+      create_validator :if=>:num
+      validator_message.should == 'cool'
     end
 
     test "overrides an inherited message with explicit message" do
-      Alias::Creator.valid :num, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}
-      TestCreator.valid :num, :if=>:num, :message=>lambda {|e| 'cooler'}
-      TestCreator.validators[:num].message({}).should == 'cooler'
+      create_parent_validator :num
+      create_validator :if=>:num, :message=>lambda {|e| 'cooler'}
+      validator_message.should == 'cooler'
     end
 
     test "sets a default message if an invalid one is given" do
-      TestCreator.valid :num, :if=>lambda {|e| 'yo'}, :message=>:blah
-      TestCreator.validators[:num].message({}).should =~ /Validation failed/
+      create_validator :if=>lambda {|e| 'yo'}, :message=>:blah
+      validator_message.should =~ /Validation failed/
     end
 
-    test "with :with option sets with method" do
-      TestCreator.valid :num, :if=>lambda {|e| 'yo'}, :with=>[:num, :name]
-      TestCreator.validators[:num].with.should == [:num, :name]
+    test "with :with option sets proc arg" do
+      create_validator :if=>lambda {|e| 'yo'}, :with=>[:a, :b]
+      @validator.validation_proc.expects(:call).with(['a','c'])
+      @validator.validate(TestCreator.new, {:a=>'a', :b=>'c', :c=>'d'}, :c)
     end
 
     test "with :unless option negates result and changes message" do
-      TestCreator.valid :num, :unless=>lambda {|e| true }, :message=>lambda {|e| "yo doesn't exist"}
-      TestCreator.validators[:num].call({}).should == false
-      TestCreator.validators[:num].message({}).should == "yo exists"
+      create_validator :unless=>lambda {|e| true }, :message=>lambda {|e| "yo doesn't exist"}
+      validate.should == false
+      validator_message.should == 'yo exists'
     end
   end  
 end
