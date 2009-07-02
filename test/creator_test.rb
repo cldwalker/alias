@@ -7,7 +7,7 @@ class Alias::CreatorTest < Test::Unit::TestCase
       stub_time = Time.new
       Time.expects(:now).returns(stub_time)
       @creator.expects(:create_aliases)
-      @creator.expects(:convert_map).returns([])
+      @creator.class.expects(:convert_config).returns([])
       @creator.create({})
       @creator.modified_at.should == stub_time
     end

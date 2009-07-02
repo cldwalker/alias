@@ -1,9 +1,6 @@
-# This is the base creator class from which other *Creator classes inherit.
-# Methods this class provides to non-creator classes are: Creator.create()
-# Methods this class provides to creator classes to be overridden: @creator.delete_invalid_aliases
-# and @creator.create_aliases
-
 module Alias
+  # This is the base creator class. To create a valid creator, Alias::Creator.map_config must be defined. Although not required,
+  # creators should enforce validation of their aliasees with Alias::Creator.valid.
   class Creator
     class<<self
       attr_reader :validators
@@ -31,9 +28,19 @@ module Alias
           @validators.delete(key)
         end
       end
+
+      def convert_config(config) #:nodoc:
+        @map_config ? @map_config.call(config) : raise("No map_config defined for #{self}")
+      end
+
+      # Takes a block which converts the creator's config to an array of aliasees.
+      def map_config(&block)
+        @map_config = block
+      end
     end
 
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
+
     def initialize(options={})
       self.alias_map = []
       @verbose = false
@@ -68,7 +75,7 @@ module Alias
     end
 
     def create(aliases_hash)
-      aliases_array = convert_map(aliases_hash)
+      aliases_array = self.class.convert_config(aliases_hash)
       delete_invalid_aliases(aliases_array)
       self.alias_map = alias_map + aliases_array
       #TODO: create method for efficiently removing constants/methods in any namespace
@@ -84,11 +91,6 @@ module Alias
     end
 
     # Must be overridden to use create()
-    def convert_map(aliases_hash); 
-      raise "This abstract method must be overridden."
-    end
-
-    # Must be overridden to use create()
     def create_aliases(aliases_hash); 
       raise "This abstract method must be overridden."
     end
@@ -99,7 +101,7 @@ module Alias
     end
     
     def to_searchable_array
-      convert_map(@alias_map)
+      self.class.convert_config(@alias_map)
     end
   end
 end

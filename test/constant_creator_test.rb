@@ -9,7 +9,7 @@ class Alias::ConstantCreatorTest < Test::Unit::TestCase
     end
 
     def expect_aliases(hash)
-      arr = Alias::ConstantCreator.new.convert_map(hash)
+      arr = Alias::ConstantCreator.convert_config(hash)
       Alias::ConstantCreator.any_instance.expects(:create_aliases).with(arr)
     end
     

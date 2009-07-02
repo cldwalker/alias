@@ -4,8 +4,8 @@ module Alias
     valid :class_method, :if=>:class_method, :with=>[:class, :name]
     valid :alias, :unless=>:class_method, :with=>[:class, :alias], :optional=>true
 
-    def convert_map(hash)
-      hash.inject([]) {|t,(klass,aliases)|
+    map_config do |c|
+      c.inject([]) {|t,(klass,aliases)|
         t += aliases.map {|k,v| {:class=>klass, :name=>k, :alias=>v} }
       }
     end

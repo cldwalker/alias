@@ -5,8 +5,8 @@ module Alias
     valid :alias, :unless=>:instance_method, :with=>[:class, :alias], :optional=>true
     valid :delegate_method, :if=>:class_method, :with=>[:delegate_class, :delegate_name]
 
-    def convert_map(aliases_hash)
-      aliases_hash.inject([]) {|t,(klass,v)|
+    map_config do |c|
+      c.inject([]) {|t,(klass,v)|
         t += v.map {|orig, aliased|
           {:class=>klass, :delegate_class=>orig.split('.')[0], :delegate_name=>orig.split('.')[1], :alias=>aliased}
         }
