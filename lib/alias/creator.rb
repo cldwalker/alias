@@ -4,9 +4,9 @@
 # and @creator.create_aliases
 
 module Alias
-  # TODO: explain default validators, mention :alias exception
   class Creator
     class<<self
+      attr_reader :validators
 
       # Creates a validation expectation for the creator with a validator. A validator must be specified with the :if or :unless option.
       # If the validator results in false for an alias, the alias is skipped.
@@ -31,37 +31,7 @@ module Alias
           @validators.delete(key)
         end
       end
-
-      #:nodoc:
-      def validators
-        @validators
-      end
-
-      def any_const_get(klass)
-        Creator.class_cache[klass] ||= Util.any_const_get(klass)
-      end
-
-      def class_cache
-        @class_cache ||= {}
-      end
-
-      def instance_method?(klass, method)
-        (klass = any_const_get(klass)) && klass.method_defined?(method)
-      end
-
-      def class_method?(klass, method)
-        (klass = any_const_get(klass)) && klass.respond_to?(method)
-      end
-      #:startdoc:
     end
-
-    valid :constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Constant '#{e}' deleted since it doesn't exist"}
-    valid :class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) },
-      :message=>lambda {|e| "Class '#{e}' deleted since it doesn't exist"}
-    valid :instance_method, :if=> lambda {|e| instance_method?(*e) },
-      :message=>lambda {|e| "#{e[0]}: instance method '#{e[1]}' deleted since it doesn't exist" }
-    valid :class_method, :if=>lambda {|e| class_method?(*e) },
-      :message=>lambda {|e| "#{e[0]}: class method '#{e[1]}' deleted since it doesn't exist" }
 
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
     def initialize(options={})
@@ -102,7 +72,7 @@ module Alias
       delete_invalid_aliases(aliases_array)
       self.alias_map = alias_map + aliases_array
       #TODO: create method for efficiently removing constants/methods in any namespace
-      silence_warnings { create_aliases(aliases_array) }
+      Util.silence_warnings { create_aliases(aliases_array) }
     end
 
     def delete_invalid_aliases(arr)
@@ -130,18 +100,6 @@ module Alias
     
     def to_searchable_array
       convert_map(@alias_map)
-    end
-
-    private
-    def any_const_get(klass)
-      Creator.any_const_get(klass)
-    end
-
-    def silence_warnings
-      old_verbose, $VERBOSE = $VERBOSE, nil
-      yield
-    ensure
-      $VERBOSE = old_verbose
     end
   end
 end

@@ -49,7 +49,7 @@ class Alias::CreatorTest < Test::Unit::TestCase
 
   context "valid" do
     before(:all) { eval "class ::TestCreator < Alias::Creator; end"}
-    before(:each) { Alias::Creator.instance_eval "@validators = {}"}
+    before(:each) { Alias::Validator.instance_eval "@validators = {}"}
 
     def validate(options={})
       @validator.validate(TestCreator.new(options), {}, :blah)
@@ -64,7 +64,8 @@ class Alias::CreatorTest < Test::Unit::TestCase
     end
 
     def create_parent_validator(key)
-      @parent_validator = Alias::Creator.valid key, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}
+      Alias::Validator.register_validators [{:key=>key, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}}]
+      @parent_validator = Alias::Validator.validators[key]
     end
 
     test "raises ArgumentError when no validator is given" do
@@ -79,7 +80,7 @@ class Alias::CreatorTest < Test::Unit::TestCase
     test "copies a validator when using a previous one" do
       create_parent_validator :num
       create_validator :if=>:num
-      @parent_validator.validate(Alias::Creator.new, {}, :blah).should == validate
+      @parent_validator.validate(TestCreator.new, {}, :blah).should == validate
     end
 
     test "inherits a validator's message when using a previous one" do

@@ -7,8 +7,9 @@ module Alias
     attr_reader :validation_proc, :message
     # Options are describe in Alias::Creator.valid.
     def initialize(options={})
+      raise ArgumentError unless options[:key] && options[:creator]
       @condition = options[:if] || options[:unless] || raise(MissingConditionError)
-      inherits(Creator.validators[@condition]) if Creator.validators[@condition]
+      inherits(Validator.validators[@condition]) if Validator.validators[@condition]
       raise InvalidValidatorError unless @condition.is_a?(Proc)
       @optional = options[:optional] || false
       @validation_proc = options[:unless] ? lambda {|e| ! @condition.clone.call(e) } : @condition
@@ -46,5 +47,45 @@ module Alias
       @options[:unless] ? result.gsub("doesn't exist", 'exists') : result
     end
     #:startdoc:
+
+    class <<self
+      attr_reader :validators
+
+      # Registers validators which creators can inherit from.
+      def register_validators(validators)
+        @validators ||= {}
+        validators.each do |e|
+          @validators[e[:key]] ||= Validator.new(e.merge(:creator=>self))
+        end
+      end
+
+      # Default validators are :constant, :class, :instance_method and :class_method .
+      def default_validators
+        [
+          {:key=>:constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Constant '#{e}' deleted since it doesn't exist"}},
+          {:key=>:class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) },
+            :message=>lambda {|e| "Class '#{e}' deleted since it doesn't exist"}},
+          {:key=>:instance_method, :if=> lambda {|e| instance_method?(*e) },
+            :message=>lambda {|e| "#{e[0]}: instance method '#{e[1]}' deleted since it doesn't exist" }},
+          {:key=>:class_method, :if=>lambda {|e| class_method?(*e) },
+            :message=>lambda {|e| "#{e[0]}: class method '#{e[1]}' deleted since it doesn't exist" }}
+        ]
+      end
+
+      #:stopdoc:
+      def any_const_get(name)
+        Util.any_const_get(name)
+      end
+
+      def instance_method?(klass, method)
+        (klass = any_const_get(klass)) && klass.method_defined?(method)
+      end
+
+      def class_method?(klass, method)
+        (klass = any_const_get(klass)) && klass.respond_to?(method)
+      end
+      #:startdoc:
+    end
   end
 end
+Alias::Validator.register_validators(Alias::Validator.default_validators)

@@ -21,6 +21,14 @@ module Alias
     end
 
     def any_const_get(name)
+      Util.const_cache[name] ||= Util.uncached_any_const_get(name)
+    end
+
+    def const_cache
+      @const_cache ||= {}
+    end
+
+    def uncached_any_const_get(name)
       begin
         klass = Object
         name.split('::').each {|e|
@@ -50,8 +58,14 @@ module Alias
           end
         }
       }
-
       shortest_aliases
+    end
+
+    def silence_warnings
+      old_verbose, $VERBOSE = $VERBOSE, nil
+      yield
+    ensure
+      $VERBOSE = old_verbose
     end
   end
 end
