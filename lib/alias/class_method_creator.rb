@@ -12,9 +12,7 @@ module Alias
 
     create_aliases do |aliases|
       aliases.map {|e|
-        klass = Util.any_const_get(e[:class])
-        class_or_module = klass.is_a?(Class) ? 'class' : 'module'
-        "#{class_or_module} ::#{e[:class]}; class<<self; alias_method :#{e[:alias]}, :#{e[:name]}; end; end"
+        "#{class_or_module(e[:class])} ::#{e[:class]}; class<<self; alias_method :#{e[:alias]}, :#{e[:name]}; end; end"
       }.join("\n")
     end
   end

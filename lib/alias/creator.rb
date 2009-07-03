@@ -43,9 +43,13 @@ module Alias
         @create_aliases ? @create_aliases.call(aliases) : raise(AbstractMethodError, "No create_aliases defined for #{self}")
       end
 
-      # Takes a block
+      # Takes a block which converts aliases to a string of ruby code to run through Kernel#eval.
       def create_aliases(&block)
         @create_aliases = block
+      end
+
+      def class_or_module(klass) #:nodoc:
+        Util.any_const_get(klass).is_a?(Class) ? 'class' : 'module'
       end
     end
 
