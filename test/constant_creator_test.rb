@@ -9,8 +9,8 @@ class Alias::ConstantCreatorTest < Test::Unit::TestCase
     end
 
     def expect_aliases(hash)
-      arr = Alias::ConstantCreator.convert_config(hash)
-      Alias::ConstantCreator.any_instance.expects(:create_aliases).with(arr)
+      arr = Alias::ConstantCreator.maps_config(hash)
+      Alias::ConstantCreator.expects(:creates_aliases).with(arr).returns('')
     end
     
     test "deletes existing aliases" do

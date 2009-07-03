@@ -13,13 +13,12 @@ module Alias
       }
     end
 
-    def create_aliases(aliases)
-      eval_string = aliases.map {|e|
+    create_aliases do |aliases|
+      aliases.map {|e|
         klass = Util.any_const_get(e[:class])
         class_or_module = klass.is_a?(Class) ? 'class' : 'module'
         %[#{class_or_module} ::#{e[:class]}; def #{e[:alias]}(*args, &block); #{e[:delegate_class]}.__send__(:#{e[:delegate_name]}, *args, &block); end; end]
       }.join("\n")
-      eval eval_string
     end
   end
 end

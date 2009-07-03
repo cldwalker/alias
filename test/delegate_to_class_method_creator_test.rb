@@ -5,8 +5,8 @@ class Alias::DelegateToMethodCreatorTest < Test::Unit::TestCase
     before(:each) { @manager = Alias::Manager.new }
 
     def expect_aliases(hash)
-      arr = Alias::DelegateToClassMethodCreator.convert_config(hash)
-      Alias::DelegateToClassMethodCreator.any_instance.expects(:create_aliases).with(arr)
+      arr = Alias::DelegateToClassMethodCreator.maps_config(hash)
+      Alias::DelegateToClassMethodCreator.expects(:creates_aliases).with(arr).returns('')
     end
 
     def create_aliases(hash)

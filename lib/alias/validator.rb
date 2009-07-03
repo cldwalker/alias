@@ -18,11 +18,11 @@ module Alias
       @message = default_message unless @message.is_a?(Proc)
     end
 
-    # Validates given aliasee. If it returns true, aliasee is aliased. Otherwise aliasee is ignored.
+    # Validates given alias objects. If it returns true, alias object is aliased. Otherwise it's ignored.
     # Prints a message for failed validations if creator has verbose flag set.
-    def validate(current_creator, aliasee, current_attribute)
+    def validate(current_creator, aliased, current_attribute)
       return true if @optional && current_creator.force
-      arg = create_proc_arg(aliasee, current_attribute)
+      arg = create_proc_arg(aliased, current_attribute)
       result = @validation_proc.call(arg)
       puts create_message(arg) if result != true && current_creator.verbose
       result
@@ -38,8 +38,8 @@ module Alias
       lambda {|e| "Validation failed for #{@options[:creator]}'s #{@options[:key]} since it doesn't exist"}
     end
 
-    def create_proc_arg(aliasee, current_attribute) #:nodoc:
-      @options[:with] ? @options[:with].map {|f| aliasee[f] } : (aliasee[current_attribute] || aliasee)
+    def create_proc_arg(aliased, current_attribute) #:nodoc:
+      @options[:with] ? @options[:with].map {|f| aliased[f] } : (aliased[current_attribute] || aliased)
     end
 
     def create_message(arg)

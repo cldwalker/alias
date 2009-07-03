@@ -6,8 +6,8 @@ class Alias::CreatorTest < Test::Unit::TestCase
     test "sets modified_at timestamp when creating aliases" do
       stub_time = Time.new
       Time.expects(:now).returns(stub_time)
-      @creator.expects(:create_aliases)
-      @creator.class.expects(:convert_config).returns([])
+      @creator.class.expects(:creates_aliases).returns('')
+      @creator.class.expects(:maps_config).returns([])
       @creator.create({})
       @creator.modified_at.should == stub_time
     end
@@ -44,6 +44,21 @@ class Alias::CreatorTest < Test::Unit::TestCase
       Time.expects(:now).returns(stub_time)
       @creator.alias_map = {'blah'=>'b'}
       @creator.modified_at.should == stub_time
+    end
+  end
+
+  context "creator subclass" do
+    before(:all) { eval "class ::TestCreator < Alias::Creator; end"}
+    test "raises AbstractMethodError if map_config not defined" do
+      assert_raises(Alias::Creator::AbstractMethodError) {
+        TestCreator.maps_config({})
+      }
+    end
+
+    test "raises AbstractMethodError if create_aliases not defined" do
+      assert_raises(Alias::Creator::AbstractMethodError) {
+        TestCreator.creates_aliases([])
+      }
     end
   end
 

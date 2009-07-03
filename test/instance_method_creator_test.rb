@@ -4,8 +4,8 @@ class Alias::InstanceMethodCreatorTest < Test::Unit::TestCase
   context "InstanceMethodCreator" do
     before(:each) { @manager = Alias::Manager.new }
     def expect_aliases(hash)
-      arr = Alias::InstanceMethodCreator.convert_config(hash)
-      Alias::InstanceMethodCreator.any_instance.expects(:create_aliases).with(arr)
+      arr = Alias::InstanceMethodCreator.maps_config(hash)
+      Alias::InstanceMethodCreator.expects(:creates_aliases).with(arr).returns('')
     end
 
     def create_aliases(hash)

@@ -1,7 +1,8 @@
 module Alias
-  # This is the base creator class. To create a valid creator, Alias::Creator.map_config must be defined. Although not required,
-  # creators should enforce validation of their aliasees with Alias::Creator.valid.
+  # This is the base creator class. To create a valid creator, a creator must define Alias::Creator.map_config and Alias::Creator.create_aliases.
+  # Although not required, creators should enforce validation of their aliases with Alias::Creator.valid.
   class Creator
+    class AbstractMethodError < StandardError; end
     class<<self
       attr_reader :validators
 
@@ -29,13 +30,22 @@ module Alias
         end
       end
 
-      def convert_config(config) #:nodoc:
-        @map_config ? @map_config.call(config) : raise("No map_config defined for #{self}")
+      def maps_config(config) #:nodoc:
+        @map_config ? @map_config.call(config) : raise(AbstractMethodError, "No map_config defined for #{self}")
       end
 
-      # Takes a block which converts the creator's config to an array of aliasees.
+      # Takes a block which converts the creator's config to an array of aliases.
       def map_config(&block)
         @map_config = block
+      end
+
+      def creates_aliases(aliases) #:nodoc:
+        @create_aliases ? @create_aliases.call(aliases) : raise(AbstractMethodError, "No create_aliases defined for #{self}")
+      end
+
+      # Takes a block
+      def create_aliases(&block)
+        @create_aliases = block
       end
     end
 
@@ -75,24 +85,22 @@ module Alias
     end
 
     def create(aliases_hash)
-      aliases_array = self.class.convert_config(aliases_hash)
+      aliases_array = self.class.maps_config(aliases_hash)
       delete_invalid_aliases(aliases_array)
       self.alias_map = alias_map + aliases_array
       #TODO: create method for efficiently removing constants/methods in any namespace
-      Util.silence_warnings { create_aliases(aliases_array) }
-    end
-
-    def delete_invalid_aliases(arr)
-      arr.delete_if {|aliasee|
-        !self.class.validators.all? {|attribute, validator|
-          validator.validate(self, aliasee, attribute)
-        }
+      Util.silence_warnings {
+        eval_string = self.class.creates_aliases(aliases_array)
+        eval(eval_string)
       }
     end
 
-    # Must be overridden to use create()
-    def create_aliases(aliases_hash); 
-      raise "This abstract method must be overridden."
+    def delete_invalid_aliases(arr)
+      arr.delete_if {|aliased|
+        !self.class.validators.all? {|attribute, validator|
+          validator.validate(self, aliased, attribute)
+        }
+      }
     end
     
     # Must be overridden to use auto_create()
@@ -101,7 +109,7 @@ module Alias
     end
     
     def to_searchable_array
-      self.class.convert_config(@alias_map)
+      self.class.maps_config(@alias_map)
     end
   end
 end
