@@ -4,8 +4,6 @@ module Alias
   class Creator
     class AbstractMethodError < StandardError; end
     class<<self
-      attr_reader :validators
-
       # Creates a validation expectation for the creator with a validator. A validator must be specified with the :if or :unless option.
       # If the validator results in false for an alias, the alias is skipped.
       # ==== Options:
@@ -19,15 +17,19 @@ module Alias
       # [:with]  An array of alias attributes which specifies the current alias attributes to pass the validator
       #          and message procs as an array.
       def valid(key, options={})
-        @validators ||= {}
         begin
-          @validators[key] = Validator.new(options.merge(:key=>key, :creator=>self))
+          validators[key] = Validator.new(options.merge(:key=>key, :creator=>self))
         rescue Validator::MissingConditionError
           raise ArgumentError, "A :unless or :if option is required."
         rescue Validator::InvalidValidatorError
           $stderr.puts "Validator not set for #{key}"
           @validators.delete(key)
         end
+      end
+
+      # Stores validators for class by alias attribute.
+      def validators
+        @validators ||= {}
       end
 
       def maps_config(config) #:nodoc:
@@ -73,17 +75,17 @@ module Alias
     def manager_create(aliases_hash, options = {})
       self.verbose = options['verbose'] if options['verbose']
       self.force = options['force'] if options['force']
-      create(aliases_hash)
+      create(aliases_hash, options[:pretend] || false)
     end
 
-    def create(aliases_hash)
+    def create(aliases_hash, pretend=false)
       aliases_array = self.class.maps_config(aliases_hash)
       delete_invalid_aliases(aliases_array)
-      self.alias_map = alias_map + aliases_array
+      self.alias_map = alias_map + aliases_array unless pretend
       #TODO: create method for efficiently removing constants/methods in any namespace
       Util.silence_warnings {
         eval_string = self.class.creates_aliases(aliases_array)
-        eval(eval_string)
+        pretend ? puts(eval_string) : Kernel.eval(eval_string)
       }
     end
 
