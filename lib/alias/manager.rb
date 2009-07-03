@@ -1,5 +1,5 @@
-# This class manages creation of aliases.
 module Alias
+  # This class manages creation of aliases.
   class Manager
   
     def initialize #:nodoc:
@@ -23,14 +23,12 @@ module Alias
         puts "Creator class '#{creator_class_string}' not found." if @verbose
         nil
       end
-      
     end
     
     def create_aliases(alias_type, aliases_hash, create_options={})
       if (obj = @alias_creators[alias_type.to_sym] ||= create_creator(alias_type.to_s))
-        aliases_hash = aliases_hash.dup
-        create_options = create_options.merge Util.slice_off!(aliases_hash, 'verbose', 'force')
-        create_options['verbose'] = @verbose unless create_options.has_key?('verbose')
+        aliases_hash = aliases_hash.dup #td: safer if full clone
+        create_options[:verbose] = @verbose unless create_options.has_key?(:verbose)
         obj.manager_create(aliases_hash, create_options)        
       end
     end

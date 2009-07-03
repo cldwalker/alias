@@ -3,19 +3,41 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 class Alias::ManagerTest < Test::Unit::TestCase
     before(:each) { @manager = Alias::Manager.new}
     
-    context "Manager" do
+
+    context "create_aliases" do
+      before(:all) { eval %[class Alias::ValidTestCreator < Alias::Creator; map_config { [] }; create_aliases { ' '};  end]}
+      def create_aliases(options={})
+        @manager.create_aliases :valid_test, {}, options
+      end
+
+      test "creates aliases" do
+        Kernel.expects(:eval).with(' ')
+        create_aliases
+      end
+
+      test "doesn't create aliases with pretend option" do
+        Kernel.expects(:eval).never
+        capture_stdout { create_aliases :pretend=>true }.should == " \n"
+      end
+
       test "verbosity trickles down to creator objects" do
-        h1 = {'String'=>'Strang'}
         @manager.verbose = true
-        capture_stdout { @manager.create_aliases(:constant, h1) }.should_not == ''
-        assert @manager.alias_creators[:constant].verbose
+        create_aliases
+        assert @manager.alias_creators[:valid_test].verbose
       end
-    
+
       test "force option sets force in creator object" do
-        h1 = {'force'=>true}
-        @manager.create_aliases(:constant, h1)
-        assert @manager.alias_creators[:constant].force
+        create_aliases :force=>true
+        assert @manager.alias_creators[:valid_test].force
       end
+
+      test "verbose option sets verbose in creator object" do
+        create_aliases :verbose=>true
+        assert @manager.alias_creators[:valid_test].verbose
+      end
+    end
+
+    context "Manager" do
     
       context "search" do
         def setup_search

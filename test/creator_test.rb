@@ -71,19 +71,5 @@ module Alias
         TestCreator.validators[:name].should == nil
       end
     end
-
-    context "valid creator" do
-      before(:all) { eval %[class Alias::ValidTestCreator < Alias::Creator; map_config { [] }; create_aliases { ' '};  end]}
-      before(:each) { @manager = Manager.new }
-      test "creates aliases" do
-        Kernel.expects(:eval).with(' ')
-        @manager.create_aliases(:valid_test, {})
-      end
-
-      test "doesn't create aliases with pretend option" do
-        Kernel.expects(:eval).never
-        capture_stdout { @manager.create_aliases(:valid_test, {}, :pretend=>true) }.should == " \n"
-      end
-    end
   end
 end

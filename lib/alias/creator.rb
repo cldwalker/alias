@@ -73,8 +73,8 @@ module Alias
     end
 
     def manager_create(aliases_hash, options = {})
-      self.verbose = options['verbose'] if options['verbose']
-      self.force = options['force'] if options['force']
+      self.verbose = options[:verbose] if options[:verbose]
+      self.force = options[:force] if options[:force]
       create(aliases_hash, options[:pretend] || false)
     end
 
