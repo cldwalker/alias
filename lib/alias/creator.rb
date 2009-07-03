@@ -69,23 +69,11 @@ module Alias
       @modified_at = Time.now
       @alias_map = value
     end
-    
-    def auto_create(array_to_alias)
-      aliases_hash = generate_aliases(array_to_alias)
-      create(aliases_hash)
-      aliases_hash
-    end
-    
-    # Options are:
-    # * :auto_alias : Array of constants to alias by shortest available constant. For example,
-    #   if the constant A already exists, then Aardvark would be aliased to Aa.
+
     def manager_create(aliases_hash, options = {})
       self.verbose = options['verbose'] if options['verbose']
       self.force = options['force'] if options['force']
       create(aliases_hash)
-      if options['auto_alias']
-        auto_create(options['auto_alias'])
-      end
     end
 
     def create(aliases_hash)
@@ -106,12 +94,7 @@ module Alias
         }
       }
     end
-    
-    # Must be overridden to use auto_create()
-    def generate_aliases(array_to_alias);
-      raise "This abstract method must be overridden."
-    end
-    
+
     def to_searchable_array
       self.class.maps_config(@alias_map)
     end

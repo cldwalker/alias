@@ -31,9 +31,8 @@ class Alias::ConstantCreatorTest < Test::Unit::TestCase
     end
 
     test "creates aliases" do
-      create_aliases 'Time'=>'T', 'auto_alias'=>['Date']
+      create_aliases 'Time'=>'T'
       ::Time.should == ::T
-      ::D.should == ::D
     end
   end
 
