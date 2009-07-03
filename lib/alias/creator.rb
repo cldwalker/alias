@@ -3,6 +3,7 @@ module Alias
   # Although not required, creators should enforce validation of their aliases with Alias::Creator.valid.
   class Creator
     class AbstractMethodError < StandardError; end
+    class FailedAliasCreationError < StandardError; end
     class<<self
       # Creates a validation expectation for the creator with a validator. A validator must be specified with the :if or :unless option.
       # If the validator results in false for an alias, the alias is skipped.
@@ -82,11 +83,13 @@ module Alias
       aliases_array = self.class.maps_config(aliases_hash)
       delete_invalid_aliases(aliases_array)
       self.alias_map = alias_map + aliases_array unless pretend
-      #TODO: create method for efficiently removing constants/methods in any namespace
-      Util.silence_warnings {
-        eval_string = self.class.creates_aliases(aliases_array)
+      begin
+        #TODO: create method for efficiently removing constants/methods in any namespace
+        eval_string = Util.silence_warnings { self.class.creates_aliases(aliases_array) }
         pretend ? puts(eval_string) : Kernel.eval(eval_string)
-      }
+      rescue
+        raise FailedAliasCreationError, $!
+      end
     end
 
     def delete_invalid_aliases(arr)

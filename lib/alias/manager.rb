@@ -1,7 +1,7 @@
 module Alias
   # This class manages creation of aliases.
   class Manager
-  
+
     def initialize #:nodoc:
       @alias_creators = {}
       @verbose = false
@@ -14,22 +14,26 @@ module Alias
     def alias_map(type)
       @alias_creators[type] && @alias_creators[type].alias_map
     end
-    
+
+    def create_aliases(alias_type, aliases_hash, create_options={})
+      if (obj = create_creator(alias_type.to_s))
+        create_options[:verbose] = @verbose unless create_options.has_key?(:verbose)
+        obj.manager_create(aliases_hash.dup, create_options)
+      end
+    rescue Creator::AbstractMethodError
+      $stderr.puts "'#{obj.class}' doesn't have the necessary methods defined."
+    rescue Creator::FailedAliasCreationError
+      $stderr.puts "'#{obj.class}' failed to create aliases with error:\n#{$!.message}"
+    end
+
+    #:stopdoc:
     def create_creator(alias_type)
       creator_class_string = "Alias::#{Util.camelize(alias_type)}Creator"
       if creator_class = Util.any_const_get(creator_class_string)
-        creator_class.new
+        @alias_creators[alias_type.to_sym] ||= creator_class.new
       else
-        puts "Creator class '#{creator_class_string}' not found." if @verbose
+        $stderr.puts "Creator class '#{creator_class_string}' not found."
         nil
-      end
-    end
-    
-    def create_aliases(alias_type, aliases_hash, create_options={})
-      if (obj = @alias_creators[alias_type.to_sym] ||= create_creator(alias_type.to_s))
-        aliases_hash = aliases_hash.dup #td: safer if full clone
-        create_options[:verbose] = @verbose unless create_options.has_key?(:verbose)
-        obj.manager_create(aliases_hash, create_options)        
       end
     end
     
@@ -76,5 +80,6 @@ module Alias
       end
       searchable_array
     end
+    #:startdoc:
   end
 end

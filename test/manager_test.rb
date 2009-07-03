@@ -35,6 +35,20 @@ class Alias::ManagerTest < Test::Unit::TestCase
         create_aliases :verbose=>true
         assert @manager.alias_creators[:valid_test].verbose
       end
+
+      test "prints error if nonexistent creator given" do
+        capture_stderr {@manager.create_aliases :blah, {} }.should =~ /not found/
+      end
+
+      test "prints error if necessary creator methods not defined" do
+        eval "class Alias::BlingCreator < Alias::Creator; end"
+        capture_stderr { @manager.create_aliases :bling, {} }.should =~ /BlingCreator/
+      end
+
+      test "prints error if aliases fail to create" do
+        eval "class Alias::Bling2Creator < Alias::Creator; map_config {[]}; create_aliases { 'blah' }; end"
+        capture_stderr { @manager.create_aliases :bling2, {} }.should =~ /failed to create aliases/
+      end
     end
 
     context "Manager" do
