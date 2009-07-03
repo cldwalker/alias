@@ -70,7 +70,7 @@ module Alias
       @alias_creators.map do |type, creator|
         if creator.modified_since_last_search?
           searchable_array.delete_if {|e| e[:type] == type.to_s}
-          new_arr = creator.to_searchable_array.each {|e| e[:type] = type.to_s}
+          new_arr = creator.alias_map.each {|e| e[:type] = type.to_s}
           searchable_array += new_arr
         end
       end

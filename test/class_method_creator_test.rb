@@ -39,10 +39,4 @@ class Alias::ClassMethodCreatorTest < Test::Unit::TestCase
       SampleClass.capohow.should == SampleClass.cap
     end
   end
-
-  test "to_searchable_array is an array of hashes" do
-    @creator = Alias::ClassMethodCreator.new
-    @creator.alias_map = {'String'=>{'name'=>'n'}}
-    @creator.to_searchable_array.should == [{:name=>'name', :alias=>'n', :class=>'String'}]
-  end
 end

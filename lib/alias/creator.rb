@@ -58,7 +58,7 @@ module Alias
     attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
 
     def initialize(options={})
-      self.alias_map = []
+      self.alias_map = options[:alias_map] ? self.class.maps_config(options[:alias_map]) : []
       @verbose = false
       @force = options[:force] || false
     end
@@ -95,10 +95,6 @@ module Alias
           validator.validate(self, aliased, attribute)
         }
       }
-    end
-
-    def to_searchable_array
-      self.class.maps_config(@alias_map)
     end
   end
 end

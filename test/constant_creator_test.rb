@@ -35,10 +35,4 @@ class Alias::ConstantCreatorTest < Test::Unit::TestCase
       ::Time.should == ::T
     end
   end
-
-  test "to_searchable_array is an array of hashes" do
-    @creator = Alias::ConstantCreator.new
-    @creator.alias_map = {'Alias'=>'A'}
-    @creator.to_searchable_array.should == [{:name=>'Alias', :alias=>'A'}]
-  end
 end

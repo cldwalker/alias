@@ -65,8 +65,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
       
       context "when indexing search" do
         def setup_index
-          @creator = Alias::ConstantCreator.new
-          @creator.alias_map = {'Array'=>'A', 'Abbrev'=>'Ab'}
+          @creator = Alias::ConstantCreator.new :alias_map=> {'Array'=>'A', 'Abbrev'=>'Ab'}
           @manager.alias_creators = {:constant=>@creator}
         end
         

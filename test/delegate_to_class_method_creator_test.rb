@@ -45,11 +45,4 @@ class Alias::DelegateToMethodCreatorTest < Test::Unit::TestCase
       SampleClass.cap.should == obj.c
     end
   end
-  
-  test "to_searchable_array is an array of hashes" do
-    @creator = Alias::DelegateToClassMethodCreator.new
-    @creator.alias_map = {'String'=>{'AnotherString.name'=>'n'}}
-    @creator.to_searchable_array.should == [{:delegate_name=>'name', :alias=>'n', :class=>'String', :delegate_class=>'AnotherString'}]
-  end
-
 end
