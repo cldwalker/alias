@@ -4,8 +4,8 @@ module Alias
 
     def initialize #:nodoc:
       @alias_creators = {}
-      @verbose = Alias.config[:verbose]  || false
-      @force = Alias.config[:force] || false
+      @verbose = false
+      @force = false
     end
 
     attr_accessor :alias_creators, :verbose, :force, :indexed_aliases

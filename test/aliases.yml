@@ -1,14 +1,15 @@
-constant:
-  Object: O
+aliases:
+  constant:
+    Object: O
   
-class_method:
-  Object:
-    const_get: cg
+  class_method:
+    Object:
+      const_get: cg
 
-instance_method:
-  String:
-      to_s: ts
-      bling: bl
-delegate_to_class_method:
-  String:
-    Date.civil: civ
+  instance_method:
+    String:
+        to_s: ts
+        bling: bl
+  delegate_to_class_method:
+    String:
+      Date.civil: civ

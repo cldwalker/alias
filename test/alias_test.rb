@@ -28,8 +28,8 @@ class AliasTest < Test::Unit::TestCase
     
     test "sets config properly" do
       Alias.manager.expects(:create_aliases).times(2)
-      Alias.init :verbose=>true, :constant=> {'Blah'=>'B'}, :instance_method=>{'String'=>{'to_s'=>'s'}}
-      expected_config = {:instance_method=>{"String"=>{"to_s"=>"s"}}, :constant=>{"Blah"=>"B"}, :verbose=>true}
+      Alias.init :verbose=>true, :aliases=>{:constant=> {'Blah'=>'B'}, :instance_method=>{'String'=>{'to_s'=>'s'}} }
+      expected_config = {:aliases=>{:instance_method=>{"String"=>{"to_s"=>"s"}}, :constant=>{"Blah"=>"B"}}, :verbose=>true}
       Alias.config.should == expected_config
     end
     
