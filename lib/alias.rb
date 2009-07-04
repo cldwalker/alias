@@ -1,6 +1,5 @@
 $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__))
 require 'yaml'
-require 'alias/hash_struct'
 require 'alias/manager'
 require 'alias/validator'
 require 'alias/creator'
@@ -25,16 +24,11 @@ module Alias
     file ? YAML::load(File.read(file)) : {}
   end
   
-  def init(options={}, &block)
-    config_hash = load_config_file(options[:file])
-    config.merge! config_hash
-    config['verbose'] = options[:verbose] if !options[:verbose].nil?
-    
-    block_config = Util.stringify_keys HashStruct.block_to_hash(block)
-    config.merge! block_config
-    manager.verbose = config['verbose'] if config.has_key?('verbose')
+  def init(options={})
+    config.merge! Util.symbolize_keys load_config_file(options.delete(:file)).merge(options)
+    manager.verbose = config[:verbose] if config.has_key?(:verbose)
     config.each do |k,v|
-      next if ['verbose'].include?(k)
+      next if [:verbose].include?(k)
       manager.create_aliases(k, v)
     end
     self

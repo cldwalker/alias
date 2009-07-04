@@ -78,11 +78,11 @@ module Alias
       end
 
       def instance_method?(klass, method)
-        (klass = any_const_get(klass)) && klass.method_defined?(method)
+        (klass = any_const_get(klass)) && (klass.method_defined?(method) || klass.private_method_defined?(method))
       end
 
       def class_method?(klass, method)
-        (klass = any_const_get(klass)) && klass.respond_to?(method)
+        (klass = any_const_get(klass)) && klass.respond_to?(method, true)
       end
       #:startdoc:
     end

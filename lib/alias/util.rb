@@ -13,9 +13,9 @@ module Alias
     end
 
     #from ActiveSupport
-    def stringify_keys(hash)
+    def symbolize_keys(hash)
       hash.inject({}) do |options, (key, value)|
-        options[key.to_s] = value
+        options[key.to_sym] = value
         options
       end
     end
