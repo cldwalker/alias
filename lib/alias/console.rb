@@ -23,7 +23,7 @@ module Alias
         end
         result = Alias.manager.search(search_hash)
       else
-        result = Alias.manager.list
+        result = Alias.manager.all_aliases
       end
       
       if options[:sort]

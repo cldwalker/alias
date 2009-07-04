@@ -56,21 +56,12 @@ module Alias
       end
     end
 
-    attr_accessor :verbose, :force, :searched_at, :modified_at, :alias_map
+    attr_accessor :verbose, :force, :alias_map
 
     def initialize(options={})
-      self.alias_map = options[:alias_map] ? self.class.maps_config(options[:alias_map]) : []
       @verbose = false
       @force = false
-    end
-    
-    def modified_since_last_search?
-      (@searched_at && @modified_at) ? (@modified_at > @searched_at) : true
-    end
-    
-    def alias_map=(value)
-      @modified_at = Time.now
-      @alias_map = value
+      @alias_map = []
     end
 
     def create(aliases_hash, pretend=false)
