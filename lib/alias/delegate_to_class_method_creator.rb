@@ -1,9 +1,9 @@
 module Alias
   class DelegateToClassMethodCreator < Creator
     map do |config|
-      config.inject([]) {|t,(klass,v)|
-        t += v.map {|orig, aliased|
-          {:class=>klass, :delegate_class=>orig.split('.')[0], :delegate_name=>orig.split('.')[1], :alias=>aliased}
+      config.inject([]) {|t,(klass,hash)|
+        t += hash.map {|k,v|
+          {:class=>klass, :delegate_class=>k.split('.')[0], :delegate_name=>k.split('.')[1], :alias=>v}
         }
       }
     end

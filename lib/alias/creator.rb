@@ -69,7 +69,7 @@ module Alias
       delete_invalid_aliases(aliases_array)
       self.aliases = aliases + aliases_array unless pretend
       begin
-        #TODO: create method for efficiently removing constants/methods in any namespace
+        #td: create method for efficiently removing constants/methods in any namespace
         eval_string = Util.silence_warnings { self.class.generates_aliases(aliases_array) }
         pretend ? puts(eval_string) : Kernel.eval(eval_string)
       rescue
@@ -78,9 +78,9 @@ module Alias
     end
 
     def delete_invalid_aliases(arr)
-      arr.delete_if {|aliased|
+      arr.delete_if {|alias_hash|
         !self.class.validators.all? {|attribute, validator|
-          validator.validate(self, aliased, attribute)
+          validator.validate(self, alias_hash, attribute)
         }
       }
     end
