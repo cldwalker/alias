@@ -23,7 +23,7 @@ module Alias
     def validate(current_creator, aliased, current_attribute)
       return true if @optional && current_creator.force
       arg = create_proc_arg(aliased, current_attribute)
-      result = @validation_proc.call(arg)
+      result = !!@validation_proc.call(arg)
       puts create_message(arg) if result != true && current_creator.verbose
       result
     end
