@@ -5,7 +5,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
     
 
     context "create_aliases" do
-      before(:all) { eval %[class Alias::ValidTestCreator < Alias::Creator; map_config { [] }; create_aliases { ' '};  end]}
+      before(:all) { eval %[class Alias::ValidTestCreator < Alias::Creator; map { [] }; generate { ' '};  end]}
       def create_aliases(options={})
         @manager.create_aliases :valid_test, {}, options
       end
@@ -76,7 +76,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
       end
 
       test "prints error if aliases fail to create" do
-        eval "class Alias::Bling2Creator < Alias::Creator; map_config {[]}; create_aliases { 'blah' }; end"
+        eval "class Alias::Bling2Creator < Alias::Creator; map {[]}; generate { 'blah' }; end"
         capture_stderr { @manager.create_aliases :bling2, {} }.should =~ /failed to create aliases/
       end
     end

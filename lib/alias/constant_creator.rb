@@ -1,10 +1,11 @@
 module Alias
   class ConstantCreator < Creator
+    map {|config| config.map {|k,v| {:name=>k, :alias=>v}} }
+
     valid :alias, :unless=>:constant, :optional=>true
     valid :name, :if=>:constant
-    map_config {|c| c.map {|k,v| {:name=>k, :alias=>v}} }
 
-    create_aliases do |aliases|
+    generate do |aliases|
       aliases.map {|e| "::#{e[:alias]} = ::#{e[:name]}"}.join("\n")
     end
   end

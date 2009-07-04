@@ -1,5 +1,5 @@
 module Alias
-  # This is the base creator class. To create a valid creator, a creator must define Alias::Creator.map_config and Alias::Creator.create_aliases.
+  # This is the base creator class. To create a valid creator, a creator must define Alias::Creator.map and Alias::Creator.generate.
   # Although not required, creators should enforce validation of their aliases with Alias::Creator.valid.
   class Creator
     class AbstractMethodError < StandardError; end
@@ -34,21 +34,21 @@ module Alias
       end
 
       def maps_config(config) #:nodoc:
-        @map_config ? @map_config.call(config) : raise(AbstractMethodError, "No map_config defined for #{self}")
+        @map ? @map.call(config) : raise(AbstractMethodError, "No map() defined for #{self}")
       end
 
       # Takes a block which converts the creator's config to an array of aliases.
-      def map_config(&block)
-        @map_config = block
+      def map(&block)
+        @map = block
       end
 
-      def creates_aliases(aliases) #:nodoc:
-        @create_aliases ? @create_aliases.call(aliases) : raise(AbstractMethodError, "No create_aliases defined for #{self}")
+      def generates_aliases(aliases) #:nodoc:
+        @generate ? @generate.call(aliases) : raise(AbstractMethodError, "No generate() defined for #{self}")
       end
 
       # Takes a block which converts aliases to a string of ruby code to run through Kernel#eval.
-      def create_aliases(&block)
-        @create_aliases = block
+      def generate(&block)
+        @generate = block
       end
 
       def class_or_module(klass) #:nodoc:
@@ -70,7 +70,7 @@ module Alias
       self.aliases = aliases + aliases_array unless pretend
       begin
         #TODO: create method for efficiently removing constants/methods in any namespace
-        eval_string = Util.silence_warnings { self.class.creates_aliases(aliases_array) }
+        eval_string = Util.silence_warnings { self.class.generates_aliases(aliases_array) }
         pretend ? puts(eval_string) : Kernel.eval(eval_string)
       rescue
         raise FailedAliasCreationError, $!

@@ -4,15 +4,15 @@ module Alias
   class CreatorTest < Test::Unit::TestCase
     context "invalid creator" do
       before(:all) { eval "class Alias::TestCreator < Alias::Creator; end"}
-      test "raises AbstractMethodError if map_config not defined" do
+      test "raises AbstractMethodError if map not defined" do
         assert_raises(Creator::AbstractMethodError) {
           TestCreator.maps_config({})
         }
       end
 
-      test "raises AbstractMethodError if create_aliases not defined" do
+      test "raises AbstractMethodError if generate not defined" do
         assert_raises(Creator::AbstractMethodError) {
-          TestCreator.creates_aliases([])
+          TestCreator.generates_aliases([])
         }
       end
 

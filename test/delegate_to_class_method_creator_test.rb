@@ -6,7 +6,7 @@ class Alias::DelegateToMethodCreatorTest < Test::Unit::TestCase
 
     def expect_aliases(hash)
       arr = Alias::DelegateToClassMethodCreator.maps_config(hash)
-      Alias::DelegateToClassMethodCreator.expects(:creates_aliases).with(arr).returns('')
+      Alias::DelegateToClassMethodCreator.expects(:generates_aliases).with(arr).returns('')
     end
 
     def create_aliases(hash)
