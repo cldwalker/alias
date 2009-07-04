@@ -3,12 +3,12 @@ module Alias
   class Manager
 
     def initialize #:nodoc:
-      @alias_creators = {}
+      @creators = {}
       @verbose = false
       @force = false
     end
 
-    attr_accessor :alias_creators, :verbose, :force
+    attr_accessor :creators, :verbose, :force
 
     def create_aliases(creator_type, aliases_hash, options={})
       return unless (creator = create_creator(creator_type))
@@ -22,10 +22,9 @@ module Alias
     end
 
     #:stopdoc:
-    def alias_types; @alias_creators.keys; end
-    def alias_creator_objects; @alias_creators.values; end
-    def alias_map(type)
-      @alias_creators[type] && @alias_creators[type].alias_map
+    def creator_types; @creators.keys; end
+    def aliases_of(creator_type)
+      @creators[creator_type] && @creators[creator_type].aliases
     end
 
     def verbose_creator?(creator_type)
@@ -36,10 +35,10 @@ module Alias
       @force.is_a?(Array) ? @force.include?(creator_type.to_sym) : @force
     end
 
-    def create_creator(alias_type)
-      creator_class_string = "Alias::#{Util.camelize(alias_type.to_s)}Creator"
+    def create_creator(creator_type)
+      creator_class_string = "Alias::#{Util.camelize(creator_type.to_s)}Creator"
       if creator_class = Util.any_const_get(creator_class_string)
-        @alias_creators[alias_type.to_sym] ||= creator_class.new
+        @creators[creator_type.to_sym] ||= creator_class.new
       else
         $stderr.puts "Creator class '#{creator_class_string}' not found."
         nil
@@ -48,6 +47,7 @@ module Alias
     
     def search(search_hash)
       result = nil
+      reset_all_aliases
       search_hash.each do |k,v|
         new_result = simple_search(k,v)
         #AND's searches
@@ -68,10 +68,12 @@ module Alias
     def intersection_of_two_arrays(arr1, arr2)
       arr2.nil? ? arr1 : arr1.select {|e| arr2.include?(e)}
     end
-    
+
+    def reset_all_aliases; @all_aliases = nil; end
+
     def all_aliases
-      @alias_creators.inject([]) do |t, (type, creator)|
-        t += creator.alias_map.each {|e| e[:type] = type.to_s}
+      @all_aliases ||= @creators.inject([]) do |t, (type, creator)|
+        t += creator.aliases.each {|e| e[:type] = type.to_s}
       end
     end
     #:startdoc:

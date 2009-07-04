@@ -23,47 +23,47 @@ class Alias::ManagerTest < Test::Unit::TestCase
       test "with manager's verbose sets creator's verbose" do
         @manager.verbose = true
         create_aliases
-        @manager.alias_creators[:valid_test].verbose.should == true
+        @manager.creators[:valid_test].verbose.should == true
       end
 
       test "with manager's verbose array sets creator's verbose" do
         @manager.verbose = [:valid_test]
         create_aliases
-        @manager.alias_creators[:valid_test].verbose.should == true
+        @manager.creators[:valid_test].verbose.should == true
       end
 
       test "with manager's verbose array doesn't set creator's verbose" do
         @manager.verbose = [:another]
         create_aliases
-        @manager.alias_creators[:valid_test].verbose.should == false
+        @manager.creators[:valid_test].verbose.should == false
       end
 
       test "with manager's force sets creator's force" do
         @manager.force = true
         create_aliases
-        @manager.alias_creators[:valid_test].force.should == true
+        @manager.creators[:valid_test].force.should == true
       end
 
       test "with manager's force array sets creator's force" do
         @manager.force = [:valid_test]
         create_aliases
-        @manager.alias_creators[:valid_test].force.should == true
+        @manager.creators[:valid_test].force.should == true
       end
 
       test "with manager's force array doesn't set creators force" do
         @manager.force = [:another]
         create_aliases
-        @manager.alias_creators[:valid_test].force.should == false
+        @manager.creators[:valid_test].force.should == false
       end
 
       test "force option sets force in creator object" do
         create_aliases :force=>true
-        @manager.alias_creators[:valid_test].force.should == true
+        @manager.creators[:valid_test].force.should == true
       end
 
       test "verbose option sets verbose in creator object" do
         create_aliases :verbose=>true
-        @manager.alias_creators[:valid_test].verbose.should == true
+        @manager.creators[:valid_test].verbose.should == true
       end
 
       test "prints error if nonexistent creator given" do
@@ -83,7 +83,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
 
     context "search" do
       def setup_search
-        @manager.alias_creators = {:constant=>Alias::ConstantCreator.new}
+        @manager.creators = {:constant=>Alias::ConstantCreator.new}
         @manager.expects(:all_aliases).returns([{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'Ab'}])
       end
 

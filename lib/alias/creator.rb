@@ -56,18 +56,18 @@ module Alias
       end
     end
 
-    attr_accessor :verbose, :force, :alias_map
+    attr_accessor :verbose, :force, :aliases
 
     def initialize(options={})
       @verbose = false
       @force = false
-      @alias_map = []
+      @aliases = []
     end
 
     def create(aliases_hash, pretend=false)
       aliases_array = self.class.maps_config(aliases_hash)
       delete_invalid_aliases(aliases_array)
-      self.alias_map = alias_map + aliases_array unless pretend
+      self.aliases = aliases + aliases_array unless pretend
       begin
         #TODO: create method for efficiently removing constants/methods in any namespace
         eval_string = Util.silence_warnings { self.class.creates_aliases(aliases_array) }

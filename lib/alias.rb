@@ -21,7 +21,7 @@ module Alias
         file = "aliases.yml"
       end
     end
-    file ? YAML::load(File.read(file)) : {}
+    file ? YAML::load(File.read(File.expand_path(file))) : {}
   end
   
   def init(options={})
