@@ -61,7 +61,7 @@ module Alias
     def initialize(options={})
       self.alias_map = options[:alias_map] ? self.class.maps_config(options[:alias_map]) : []
       @verbose = false
-      @force = options[:force] || false
+      @force = false
     end
     
     def modified_since_last_search?
@@ -71,12 +71,6 @@ module Alias
     def alias_map=(value)
       @modified_at = Time.now
       @alias_map = value
-    end
-
-    def manager_create(aliases_hash, options = {})
-      self.verbose = options[:verbose] if options[:verbose]
-      self.force = options[:force] if options[:force]
-      create(aliases_hash, options[:pretend] || false)
     end
 
     def create(aliases_hash, pretend=false)

@@ -20,20 +20,50 @@ class Alias::ManagerTest < Test::Unit::TestCase
         capture_stdout { create_aliases :pretend=>true }.should == " \n"
       end
 
-      test "verbosity trickles down to creator objects" do
+      test "with manager's verbose sets creator's verbose" do
         @manager.verbose = true
         create_aliases
-        assert @manager.alias_creators[:valid_test].verbose
+        @manager.alias_creators[:valid_test].verbose.should == true
+      end
+
+      test "with manager's verbose array sets creator's verbose" do
+        @manager.verbose = [:valid_test]
+        create_aliases
+        @manager.alias_creators[:valid_test].verbose.should == true
+      end
+
+      test "with manager's verbose array doesn't set creator's verbose" do
+        @manager.verbose = [:another]
+        create_aliases
+        @manager.alias_creators[:valid_test].verbose.should == false
+      end
+
+      test "with manager's force sets creator's force" do
+        @manager.force = true
+        create_aliases
+        @manager.alias_creators[:valid_test].force.should == true
+      end
+
+      test "with manager's force array sets creator's force" do
+        @manager.force = [:valid_test]
+        create_aliases
+        @manager.alias_creators[:valid_test].force.should == true
+      end
+
+      test "with manager's force array doesn't set creators force" do
+        @manager.force = [:another]
+        create_aliases
+        @manager.alias_creators[:valid_test].force.should == false
       end
 
       test "force option sets force in creator object" do
         create_aliases :force=>true
-        assert @manager.alias_creators[:valid_test].force
+        @manager.alias_creators[:valid_test].force.should == true
       end
 
       test "verbose option sets verbose in creator object" do
         create_aliases :verbose=>true
-        assert @manager.alias_creators[:valid_test].verbose
+        @manager.alias_creators[:valid_test].verbose.should == true
       end
 
       test "prints error if nonexistent creator given" do

@@ -6,7 +6,9 @@ class Alias::ValidatorTest < Test::Unit::TestCase
     before(:each) { Alias::Validator.instance_eval "@validators = {}"}
 
     def validate(options={})
-      @validator.validate(TestCreator.new(options), {}, :blah)
+      creator = TestCreator.new
+      options.each {|k,v| creator.send("#{k}=",v)}
+      @validator.validate(creator, {}, :blah)
     end
 
     def validator_message

@@ -23,10 +23,10 @@ class AliasTest < Test::Unit::TestCase
     Alias.load_config_file.should == {}
   end
   
-  context "Alias_init" do
-    before(:each) { Alias.config = {}}
+  context "Alias init" do
+    before(:each) { Alias.instance_eval "@manager = @config = nil"}
     
-    test "with block sets config properly" do
+    test "sets config properly" do
       Alias.manager.expects(:create_aliases).times(2)
       Alias.init :verbose=>true, :constant=> {'Blah'=>'B'}, :instance_method=>{'String'=>{'to_s'=>'s'}}
       expected_config = {:instance_method=>{"String"=>{"to_s"=>"s"}}, :constant=>{"Blah"=>"B"}, :verbose=>true}
@@ -42,8 +42,7 @@ class AliasTest < Test::Unit::TestCase
     end
     
     test "with verbose option sets config and manager verbosity" do
-      Alias.manager.stubs(:create_aliases)
-      Alias.init :verbose=>true
+      Alias.init :verbose=>true, :instance_method=>{}
       assert Alias.config[:verbose]
       assert Alias.manager.verbose
     end

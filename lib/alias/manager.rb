@@ -4,31 +4,40 @@ module Alias
 
     def initialize #:nodoc:
       @alias_creators = {}
-      @verbose = false
-      @force = false
+      @verbose = Alias.config[:verbose]  || false
+      @force = Alias.config[:force] || false
     end
 
     attr_accessor :alias_creators, :verbose, :force, :indexed_aliases
+
     def alias_types; @alias_creators.keys; end
     def alias_creator_objects; @alias_creators.values; end
     def alias_map(type)
       @alias_creators[type] && @alias_creators[type].alias_map
     end
 
-    def create_aliases(alias_type, aliases_hash, create_options={})
-      if (obj = create_creator(alias_type.to_s))
-        create_options[:verbose] = @verbose unless create_options.has_key?(:verbose)
-        obj.manager_create(aliases_hash.dup, create_options)
-      end
+    def verbose_creator?(creator_type)
+      @verbose.is_a?(Array) ? @verbose.include?(creator_type.to_sym) : @verbose
+    end
+
+    def force_creator?(creator_type)
+      @force.is_a?(Array) ? @force.include?(creator_type.to_sym) : @force
+    end
+
+    def create_aliases(creator_type, aliases_hash, options={})
+      return unless (creator = create_creator(creator_type))
+      creator.verbose = options[:verbose] ? options[:verbose] : verbose_creator?(creator_type)
+      creator.force = options[:force] ? options[:force] : force_creator?(creator_type)
+      creator.create(aliases_hash.dup, options[:pretend] || false)
     rescue Creator::AbstractMethodError
-      $stderr.puts "'#{obj.class}' doesn't have the necessary methods defined."
+      $stderr.puts "'#{creator.class}' doesn't have the necessary methods defined."
     rescue Creator::FailedAliasCreationError
-      $stderr.puts "'#{obj.class}' failed to create aliases with error:\n#{$!.message}"
+      $stderr.puts "'#{creator.class}' failed to create aliases with error:\n#{$!.message}"
     end
 
     #:stopdoc:
     def create_creator(alias_type)
-      creator_class_string = "Alias::#{Util.camelize(alias_type)}Creator"
+      creator_class_string = "Alias::#{Util.camelize(alias_type.to_s)}Creator"
       if creator_class = Util.any_const_get(creator_class_string)
         @alias_creators[alias_type.to_sym] ||= creator_class.new
       else

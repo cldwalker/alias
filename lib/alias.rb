@@ -25,8 +25,7 @@ module Alias
   end
   
   def init(options={})
-    config.merge! Util.symbolize_keys load_config_file(options.delete(:file)).merge(options)
-    manager.verbose = config[:verbose] if config.has_key?(:verbose)
+    config.merge! Util.symbolize_keys(load_config_file(options.delete(:file)).merge(options))
     config.each do |k,v|
       next if [:verbose].include?(k)
       manager.create_aliases(k, v)
@@ -37,9 +36,7 @@ module Alias
   def config
     @config ||= {}
   end
-  
-  def config=(value); @config = value; end
-    
+
   def manager
     @manager ||= Manager.new
   end
