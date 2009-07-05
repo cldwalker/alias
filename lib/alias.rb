@@ -12,20 +12,12 @@ require 'alias/console'
 
 module Alias
   extend self
-  
-  def load_config_file(file=nil)
-    if file.nil?
-      if File.exists?("config/aliases.yml")
-        file = "config/aliases.yml"
-      elsif File.exists?("aliases.yml")
-        file = "aliases.yml"
-      end
-    end
-    file ? YAML::load(File.read(File.expand_path(file))) : {}
-  end
-  
-  def init(options={})
-    file_config = Util.symbolize_keys load_config_file(options.delete(:file))
+
+  # Creates aliases from Alias.config_file if it exists and merges them with any explicit aliases. This method takes
+  # the same keys used by config files (see Alias.config_file) and also the following options:
+  # * :file : Specifies a config file to override Alias.config_file. If set to false, no config_file is loaded.
+  def create(options={})
+    file_config = load_config_file(options.delete(:file))
     file_config[:aliases] = file_config[:aliases] ? Util.symbolize_keys(file_config.delete(:aliases)) : {}
     config.merge! file_config.merge(options)
     manager.verbose = config[:verbose] if config[:verbose]
@@ -35,6 +27,24 @@ module Alias
     end
     self
   end
+
+  # Set to config/aliases.yml if it exists. Otherwise set to ~/.aliases.yml. A config file has the following keys:
+  # [:aliases] This takes a hash mapping creators to their config hashes. Valid creators are :instance_method, :class_method, :constant
+  #            and :delegate_to_class_method.
+  # [:verbose] Sets whether creators are verbose with boolean or array of creator symbols. A boolean sets verbosity for all creators whereas
+  #            the array specifies which creators. Default is false.
+  # [:force] Sets whether creators force optional validations with boolean or array of creator symbols. Works the same as :verbose. Default is false.
+  def config_file
+    @config_file ||= File.exists?("config/aliases.yml") ? 'config/aliases.yml' : "#{ENV['HOME']}/.aliases.yml"
+  end
+
+  #:stopdoc:
+  def load_config_file(file)
+    return {} if file == false
+    @config_file = file if file
+    loaded_config = File.exists?(File.expand_path(config_file)) ? YAML::load_file(File.expand_path(config_file)) : {}
+    Util.symbolize_keys loaded_config
+  end
   
   def config
     @config ||= {}
@@ -43,4 +53,5 @@ module Alias
   def manager
     @manager ||= Manager.new
   end
+  #:startdoc:
 end
