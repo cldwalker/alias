@@ -15,17 +15,17 @@ module Alias
 
   # Creates aliases from Alias.config_file if it exists and merges them with any explicit aliases. This method takes
   # the same keys used by config files (see Alias.config_file) and also the following options:
-  # * :file : Specifies a config file to override Alias.config_file. If set to false, no config_file is loaded.
+  # * :file : Specifies a config file to override Alias.config_file. If set to false, no config file is loaded.
   def create(options={})
     file_config = load_config_file(options.delete(:file))
     file_config[:aliases] = file_config[:aliases] ? Util.symbolize_keys(file_config.delete(:aliases)) : {}
-    config.merge! file_config.merge(options)
-    manager.verbose = config[:verbose] if config[:verbose]
-    manager.force = config[:force] if config[:force]
-    config[:aliases].each do |creator_type, aliases|
+    new_config = Util.recursive_hash_merge(file_config,options)
+    manager.verbose = new_config[:verbose] if new_config[:verbose]
+    manager.force = new_config[:force] if new_config[:force]
+    new_config[:aliases].each do |creator_type, aliases|
       manager.create_aliases(creator_type, aliases)
     end
-    self
+    @config = Util.recursive_hash_merge(config, new_config)
   end
 
   # Set to config/aliases.yml if it exists. Otherwise set to ~/.aliases.yml. A config file has the following keys:

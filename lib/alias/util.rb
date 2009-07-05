@@ -20,6 +20,11 @@ module Alias
       end
     end
 
+    # Recursively merge hash1 with hash2.
+    def recursive_hash_merge(hash1, hash2)
+      hash1.merge(hash2) {|k,o,n| (o.is_a?(Hash)) ? recursive_hash_merge(o,n) : n}
+    end
+
     def any_const_get(name)
       Util.const_cache[name] ||= Util.uncached_any_const_get(name)
     end

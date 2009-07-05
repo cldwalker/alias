@@ -48,6 +48,16 @@ class AliasTest < Test::Unit::TestCase
         Alias.create :force=>true, :aliases=>{}
         Alias.manager.force.should == true
       end
+
+      test "called twice recursively merges config" do
+        hash1 = {:constant=>{"Blah"=>"B"}}
+        Alias.manager.expects(:create_aliases).with(:constant, hash1[:constant])
+        Alias.create :aliases=>hash1
+        hash2 = {:constant=>{"Blah2"=>"B2"}}
+        Alias.manager.expects(:create_aliases).with(:constant, hash2[:constant])
+        Alias.create :aliases=>hash2
+        Alias.config.should == {:aliases=>{:constant=>{"Blah"=>"B", "Blah2"=>"B2"}} }
+      end
     end
   end
 end
