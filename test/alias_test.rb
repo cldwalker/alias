@@ -23,7 +23,7 @@ class AliasTest < Test::Unit::TestCase
         Alias.manager.aliases_of(:instance_method).empty?.should be(false)
         Alias.manager.aliases_of(:class_method).empty?.should be(false)
         Alias.manager.aliases_of(:constant).empty?.should be(false)
-        Alias.manager.aliases_of(:delegate_to_class_method).empty?.should be(false)
+        Alias.manager.aliases_of(:class_to_instance_method).empty?.should be(false)
       end
 
       test "with false file option doesn't load config file" do

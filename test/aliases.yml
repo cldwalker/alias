@@ -1,4 +1,4 @@
-aliases:
+:aliases:
   constant:
     Object: O
   
@@ -10,6 +10,6 @@ aliases:
     String:
         to_s: ts
         bling: bl
-  delegate_to_class_method:
+  class_to_instance_method:
     String:
       Date.civil: civ

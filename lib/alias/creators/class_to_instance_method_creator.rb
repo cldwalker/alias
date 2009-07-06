@@ -1,4 +1,4 @@
-class Alias::Creators::DelegateToClassMethodCreator < Alias::Creator
+class Alias::Creators::ClassToInstanceMethodCreator < Alias::Creator
   map do |config|
     config.inject([]) {|t,(klass,hash)|
       t += hash.map {|k,v|

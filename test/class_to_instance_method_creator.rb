@@ -1,16 +1,16 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-class Alias::Creators::DelegateToMethodCreatorTest < Test::Unit::TestCase
-  context "DelegateToClassMethodCreator" do
+class Alias::Creators::ClassToInstanceMethodCreatorTest < Test::Unit::TestCase
+  context "ClassToInstanceMethodCreator" do
     before(:each) { @manager = Alias::Manager.new }
 
     def expect_aliases(hash)
-      arr = Alias::Creators::DelegateToClassMethodCreator.maps_config(hash)
-      Alias::Creators::DelegateToClassMethodCreator.expects(:generates_aliases).with(arr).returns('')
+      arr = Alias::Creators::ClassToInstanceMethodCreator.maps_config(hash)
+      Alias::Creators::ClassToInstanceMethodCreator.expects(:generates_aliases).with(arr).returns('')
     end
 
     def create_aliases(hash)
-      @manager.create_aliases(:delegate_to_class_method, hash)
+      @manager.create_aliases(:class_to_instance_method, hash)
     end
 
     test "deletes invalid delegate classes" do
