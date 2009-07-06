@@ -46,7 +46,7 @@ module Alias
 
     #:stopdoc:
     def all_creator_types
-      Creator.creators.map {|e| Util.underscore(e.to_s[/::(\w+)Creator/,1]) }
+      Creator.creators.map {|e| Util.underscore(e.to_s[/::(\w+)Creator$/,1]) }
     end
 
     def aliases_of(creator_type)
@@ -62,7 +62,7 @@ module Alias
     end
 
     def create_creator(creator_type)
-      creator_class_string = "Alias::#{Util.camelize(creator_type.to_s)}Creator"
+      creator_class_string = "Alias::Creators::#{Util.camelize(creator_type.to_s)}Creator"
       if creator_class = Util.any_const_get(creator_class_string)
         @creators[creator_type.to_sym] ||= creator_class.new
       else

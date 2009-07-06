@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-class Alias::ConstantCreatorTest < Test::Unit::TestCase
+class Alias::Creators::ConstantCreatorTest < Test::Unit::TestCase
   context "AliasConstantCreator" do
     before(:each) { @manager = Alias::Manager.new }
 
@@ -9,17 +9,17 @@ class Alias::ConstantCreatorTest < Test::Unit::TestCase
     end
 
     def expect_aliases(hash)
-      arr = Alias::ConstantCreator.maps_config(hash)
-      Alias::ConstantCreator.expects(:generates_aliases).with(arr).returns('')
+      arr = Alias::Creators::ConstantCreator.maps_config(hash)
+      Alias::Creators::ConstantCreator.expects(:generates_aliases).with(arr).returns('')
     end
     
     test "deletes existing aliases" do
       expect_aliases "Array"=>'Ar'
-      create_aliases "Alias::ConstantCreator"=>"Alias::Creator", "Array"=>"Ar"
+      create_aliases "Alias::Creators::ConstantCreator"=>"Alias::Creator", "Array"=>"Ar"
     end
 
     test "deletes existing aliases unless force option" do
-      h1 = {"Alias::ConstantCreator"=>"Alias::Creator", "Array"=>"Ar"}
+      h1 = {"Alias::Creators::ConstantCreator"=>"Alias::Creator", "Array"=>"Ar"}
       expect_aliases h1
       create_aliases h1, :force=>true
     end

@@ -1,4 +1,5 @@
 module Alias
+  class Creators; end
   # This is the base creator class. To create a valid creator, a creator must define Alias::Creator.map and Alias::Creator.generate.
   # Although not required, creators should enforce validation of their aliases with Alias::Creator.valid.
   class Creator

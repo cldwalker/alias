@@ -1,12 +1,12 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-class Alias::DelegateToMethodCreatorTest < Test::Unit::TestCase
+class Alias::Creators::DelegateToMethodCreatorTest < Test::Unit::TestCase
   context "DelegateToClassMethodCreator" do
     before(:each) { @manager = Alias::Manager.new }
 
     def expect_aliases(hash)
-      arr = Alias::DelegateToClassMethodCreator.maps_config(hash)
-      Alias::DelegateToClassMethodCreator.expects(:generates_aliases).with(arr).returns('')
+      arr = Alias::Creators::DelegateToClassMethodCreator.maps_config(hash)
+      Alias::Creators::DelegateToClassMethodCreator.expects(:generates_aliases).with(arr).returns('')
     end
 
     def create_aliases(hash)

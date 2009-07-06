@@ -4,7 +4,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
     before(:each) { @manager = Alias::Manager.new}
 
     context "create_aliases" do
-      before(:all) { eval %[class Alias::ValidTestCreator < Alias::Creator; map { [] }; generate { ' '};  end]}
+      before(:all) { eval %[class Alias::Creators::ValidTestCreator < Alias::Creator; map { [] }; generate { ' '};  end]}
       def create_aliases(options={})
         @manager.create_aliases :valid_test, {}, options
       end
@@ -70,19 +70,19 @@ class Alias::ManagerTest < Test::Unit::TestCase
       end
 
       test "prints error if necessary creator methods not defined" do
-        eval "class Alias::BlingCreator < Alias::Creator; end"
+        eval "class Alias::Creators::BlingCreator < Alias::Creator; end"
         capture_stderr { @manager.create_aliases :bling, {} }.should =~ /BlingCreator/
       end
 
       test "prints error if aliases fail to create" do
-        eval "class Alias::Bling2Creator < Alias::Creator; map {[]}; generate { 'blah' }; end"
+        eval "class Alias::Creators::Bling2Creator < Alias::Creator; map {[]}; generate { 'blah' }; end"
         capture_stderr { @manager.create_aliases :bling2, {} }.should =~ /failed to create aliases/
       end
     end
 
     context "search" do
       def setup_search
-        @manager.instance_variable_set "@creators", {:constant=>Alias::ConstantCreator.new}
+        @manager.instance_variable_set "@creators", {:constant=>Alias::Creators::ConstantCreator.new}
         @manager.expects(:all_aliases).returns([{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'Ab'}])
       end
 
