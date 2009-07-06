@@ -44,7 +44,7 @@ module Alias
 
     def create_message(arg)
       result = @message.call(arg)
-      @options[:unless] ? result.gsub("doesn't exist", 'exists') : result
+      @options[:unless] ? result.gsub("doesn't exist", 'already exists') : result
     end
     #:startdoc:
 
@@ -62,13 +62,13 @@ module Alias
       # Default validators are :constant, :class, :instance_method and :class_method .
       def default_validators
         [
-          {:key=>:constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Constant '#{e}' deleted since it doesn't exist"}},
+          {:key=>:constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Constant '#{e}' not created since it doesn't exist"}},
           {:key=>:class, :if=>lambda {|e| ((klass = any_const_get(e)) && klass.is_a?(Module)) },
-            :message=>lambda {|e| "Class '#{e}' deleted since it doesn't exist"}},
+            :message=>lambda {|e| "Alias for class '#{e}' not created since the class doesn't exist"}},
           {:key=>:instance_method, :if=> lambda {|e| instance_method?(*e) },
-            :message=>lambda {|e| "#{e[0]}: instance method '#{e[1]}' deleted since it doesn't exist" }},
+            :message=>lambda {|e| "Alias for instance method '#{e[0]}.#{e[1]}' not created since it doesn't exist" }},
           {:key=>:class_method, :if=>lambda {|e| class_method?(*e) },
-            :message=>lambda {|e| "#{e[0]}: class method '#{e[1]}' deleted since it doesn't exist" }}
+            :message=>lambda {|e| "Alias for class method '#{e[0]}.#{e[1]}' not created since it doesn't exist" }}
         ]
       end
 

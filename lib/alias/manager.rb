@@ -23,6 +23,7 @@ module Alias
     end
 
     def console_create_aliases(creator_type, aliases_hash, options={})
+      options = {:verbose=>true}.update(options)
       @created_aliases ||= {}
       creator_type = (all_creator_types.find {|e| e[/^#{creator_type}/] } || creator_type).to_sym
       if create_aliases(creator_type, aliases_hash, options)

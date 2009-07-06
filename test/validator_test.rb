@@ -56,7 +56,7 @@ class Alias::ValidatorTest < Test::Unit::TestCase
     test "with :unless option negates result and changes message" do
       create_validator :unless=>lambda {|e| true }, :message=>lambda {|e| "yo doesn't exist"}
       validate.should == false
-      validator_message.should == 'yo exists'
+      validator_message.should == 'yo already exists'
     end
 
     test "with :optional option can be forced" do

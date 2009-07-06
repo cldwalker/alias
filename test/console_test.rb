@@ -9,7 +9,7 @@ class Alias::ConsoleTest < Test::Unit::TestCase
   end
 
   test "create_aliases takes partial creator names" do
-    Alias.manager.expects(:create_aliases).with(:instance_method, {}, {})
+    Alias.manager.expects(:create_aliases).with(:instance_method, {}, anything)
     @console.create_aliases(:in, {})
   end
 
@@ -44,11 +44,11 @@ class Alias::ConsoleTest < Test::Unit::TestCase
     end
 
     test "merges existing aliases with created aliases" do
-      hash = {"Bluh"=>{"blah"=>"b2"}}
+      hash = {"Bluh"=>{"blah"=>"b3"}}
       @console.create_aliases :instance_method, hash
       Alias.expects(:read_config_file).returns({:aliases=>{:instance_method=>{"Bluh"=>{"bling"=>"bl"}}}})
       Alias.expects(:save_to_file).with("#{ENV['HOME']}/.alias.yml",
-        {:aliases=>{:instance_method=>{"Bluh"=>{'bling'=>'bl', 'blah'=>'b2'}}}}.to_yaml)
+        {:aliases=>{:instance_method=>{"Bluh"=>{'bling'=>'bl', 'blah'=>'b3'}}}}.to_yaml)
       capture_stdout { @console.save_aliases }
     end
   end
