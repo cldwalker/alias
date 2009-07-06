@@ -1,12 +1,12 @@
 #Usage: include Alias::Console wherever you want to use these methods
 module Alias
   module Console
-    def self.included(base)
-      base.extend self
+    def create_aliases(*args)
+      Alias.manager.console_create_aliases(*args)
     end
-    
-    def create(*args)
-      Alias.manager.create_aliases(*args)
+
+    def save_aliases(file=nil)
+      Alias.manager.save_aliases(file)
     end
     
     #options: type, raw, class, sort

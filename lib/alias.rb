@@ -18,11 +18,10 @@ module Alias
   # * :file : Specifies a config file to override Alias.config_file. If set to false, no config file is loaded.
   def create(options={})
     file_config = load_config_file(options.delete(:file))
-    file_config[:aliases] = file_config[:aliases] ? Util.symbolize_keys(file_config.delete(:aliases)) : {}
-    new_config = Util.recursive_hash_merge(file_config,options)
+    new_config = Util.recursive_hash_merge(file_config, options)
     manager.verbose = new_config[:verbose] if new_config[:verbose]
     manager.force = new_config[:force] if new_config[:force]
-    new_config[:aliases].each do |creator_type, aliases|
+    (new_config[:aliases] || {}).each do |creator_type, aliases|
       manager.create_aliases(creator_type, aliases)
     end
     @config = Util.recursive_hash_merge(config, new_config)
@@ -39,11 +38,29 @@ module Alias
   end
 
   #:stopdoc:
+  def add_to_config_file(new_aliases, file)
+    file ||= File.directory?('config') ? 'config/aliases.yml' : "#{ENV['HOME']}/.aliases.yml"
+    existing_aliases = read_config_file(file)
+    existing_aliases[:aliases] = Util.recursive_hash_merge existing_aliases[:aliases], new_aliases
+    save_to_file file, existing_aliases.to_yaml
+    puts "Saved created aliases to #{file}."
+  end
+
+  def save_to_file(file, string)
+    File.open(File.expand_path(file), 'w') {|f| f.write string }
+  end
+
+  def read_config_file(file)
+    file_config = File.exists?(File.expand_path(file)) ? YAML::load_file(File.expand_path(file)) : {}
+    file_config = Util.symbolize_keys file_config
+    file_config[:aliases] = file_config[:aliases] ? Util.symbolize_keys(file_config.delete(:aliases)) : {}
+    file_config
+  end
+
   def load_config_file(file)
     return {} if file == false
     @config_file = file if file
-    loaded_config = File.exists?(File.expand_path(config_file)) ? YAML::load_file(File.expand_path(config_file)) : {}
-    Util.symbolize_keys loaded_config
+    read_config_file(config_file)
   end
   
   def config

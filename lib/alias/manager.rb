@@ -21,6 +21,23 @@ module Alias
       $stderr.puts "'#{creator.class}' failed to create aliases with error:\n#{$!.message}"
     end
 
+    def console_create_aliases(creator_type, aliases_hash, options={})
+      @created_aliases ||= {}
+      if create_aliases(creator_type, aliases_hash, options)
+        @created_aliases[creator_type] = aliases_hash
+      end
+    end
+
+    def save_aliases(file=nil)
+      if @created_aliases
+        Alias.add_to_config_file(@created_aliases, file)
+        true
+      else
+        puts "Didn't save. No created aliases detected."
+        false
+      end
+    end
+
     #:stopdoc:
     def creator_types; @creators.keys; end
     def aliases_of(creator_type)

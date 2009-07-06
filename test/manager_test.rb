@@ -2,7 +2,6 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 class Alias::ManagerTest < Test::Unit::TestCase
     before(:each) { @manager = Alias::Manager.new}
-    
 
     context "create_aliases" do
       before(:all) { eval %[class Alias::ValidTestCreator < Alias::Creator; map { [] }; generate { ' '};  end]}

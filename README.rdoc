@@ -14,28 +14,27 @@ Install the gem with:
 The easiest setup simply involves dropping two lines in your .irbrc:
 
     require 'alias' 
-    Alias.init
+    Alias.create
 
 This setup assumes you have an aliases.yml in the current directory or a config/aliases.yml.
-If neither is the case, pass a :file option to init():
+If neither is the case, pass a :file option to create():
 
-    Alias.init :file=>"/path/to/my/clandestine_aliases.yml"
+    Alias.create :file=>"/path/to/my/clandestine_aliases.yml"
 
-If you'd like to define your aliases without a config file, pass Alias.init() a block and
+If you'd like to define your aliases without a config file, pass Alias.create() a block and
 call methods as if they were top level keys in the config:
 
-    Alias.init do |a|
-      a.verbose = true
-      a.constant = {'Array' = 'A'}
-      a.instance_method = {'String'=>{'downcase'=>'dc' }, 'Array'=>{'select'=>'s'}}
-    end
+    Alias.create :verbose=>true, :aliases=>{
+      :constant=>{'Array' = 'A'},
+      :instance_method=>{'String'=>{'downcase'=>'dc' }, 'Array'=>{'select'=>'s'}}
+    }
 
 == Irb/Console Use
 
 To use in irb or your own console, simply include the console class:
 
-    irb>>include Alias::Console
-    => Object
+    irb>>extend Alias::Console
+    => main
 
 Currently only two methods are imported: search and create.
 Search lists your aliases and create, well, creates aliases.
@@ -105,5 +104,4 @@ See creator.rb for more methods you can hook into.
 * Alias/forward methods from one object to another. This will be useful for creating
   'commands' in irb.
 * Provide an auto_alias method for creators.
-* Save aliases to file (for console use).
 * Add more RDoc documentation. 
