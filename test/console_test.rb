@@ -14,6 +14,7 @@ class Alias::ConsoleTest < Test::Unit::TestCase
     test "saves created aliases" do
       hash = {"Bluh"=>{"blah"=>"bl"}}
       @console.create_aliases :instance_method, hash
+      File.expects(:exists?).returns(false)
       Alias.expects(:save_to_file).with("#{ENV['HOME']}/.aliases.yml", {:aliases=>{:instance_method=>hash}}.to_yaml)
       capture_stdout { @console.save_aliases }.should =~ /Save/
     end

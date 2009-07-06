@@ -11,7 +11,7 @@ class AliasTest < Test::Unit::TestCase
       before(:each) { Alias.instance_eval "@manager = @config = @config_file = nil"}
     
       test "with aliases option creates aliases" do
-        options = {:aliases=>{:constant=> {'Array'=>'Arr'}, :instance_method=>{'String'=>{'to_s'=>'s'}} } }
+        options = {:aliases=>{:constant=> {'Array'=>'Arr'}, :instance_method=>{'String'=>{'to_s'=>'s'}} } , :file=>false}
         Alias.create options
         Alias.manager.aliases_of(:instance_method).empty?.should be(false)
         Alias.manager.aliases_of(:constant).empty?.should be(false)
@@ -52,10 +52,10 @@ class AliasTest < Test::Unit::TestCase
       test "called twice recursively merges config" do
         hash1 = {:constant=>{"Blah"=>"B"}}
         Alias.manager.expects(:create_aliases).with(:constant, hash1[:constant])
-        Alias.create :aliases=>hash1
+        Alias.create :aliases=>hash1, :file=>false
         hash2 = {:constant=>{"Blah2"=>"B2"}}
         Alias.manager.expects(:create_aliases).with(:constant, hash2[:constant])
-        Alias.create :aliases=>hash2
+        Alias.create :aliases=>hash2, :file=>false
         Alias.config.should == {:aliases=>{:constant=>{"Blah"=>"B", "Blah2"=>"B2"}} }
       end
     end
