@@ -9,13 +9,14 @@ module Alias
     end
 
     attr_accessor :verbose, :force
-    attr_reader :creators
+    attr_reader :creators, :created_aliases
 
     def create_aliases(creator_type, aliases_hash, options={})
       return unless (creator = create_creator(creator_type))
       creator.verbose = options[:verbose] ? options[:verbose] : verbose_creator?(creator_type)
       creator.force = options[:force] ? options[:force] : force_creator?(creator_type)
       creator.create(aliases_hash.dup, options[:pretend] || false)
+      true
     rescue Creator::AbstractMethodError
       $stderr.puts "'#{creator.class}' doesn't have the necessary methods defined."
     rescue Creator::FailedAliasCreationError
