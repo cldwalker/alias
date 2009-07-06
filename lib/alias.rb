@@ -27,19 +27,19 @@ module Alias
     @config = Util.recursive_hash_merge(config, new_config)
   end
 
-  # Set to config/aliases.yml if it exists. Otherwise set to ~/.aliases.yml. A config file has the following keys:
+  # Set to config/alias.yml if it exists. Otherwise set to ~/.alias.yml. A config file has the following keys:
   # [:aliases] This takes a hash mapping creators to their config hashes. Valid creators are :instance_method, :class_method, :constant
   #            and :delegate_to_class_method.
   # [:verbose] Sets whether creators are verbose with boolean or array of creator symbols. A boolean sets verbosity for all creators whereas
   #            the array specifies which creators. Default is false.
   # [:force] Sets whether creators force optional validations with boolean or array of creator symbols. Works the same as :verbose. Default is false.
   def config_file
-    @config_file ||= File.exists?("config/aliases.yml") ? 'config/aliases.yml' : "#{ENV['HOME']}/.aliases.yml"
+    @config_file ||= File.exists?("config/alias.yml") ? 'config/alias.yml' : "#{ENV['HOME']}/.alias.yml"
   end
 
   #:stopdoc:
   def add_to_config_file(new_aliases, file)
-    file ||= File.directory?('config') ? 'config/aliases.yml' : "#{ENV['HOME']}/.aliases.yml"
+    file ||= File.directory?('config') ? 'config/alias.yml' : "#{ENV['HOME']}/.alias.yml"
     existing_aliases = read_config_file(file)
     existing_aliases[:aliases] = Util.recursive_hash_merge existing_aliases[:aliases], new_aliases
     save_to_file file, existing_aliases.to_yaml

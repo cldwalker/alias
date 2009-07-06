@@ -15,7 +15,7 @@ class Alias::ConsoleTest < Test::Unit::TestCase
       hash = {"Bluh"=>{"blah"=>"bl"}}
       @console.create_aliases :instance_method, hash
       File.expects(:exists?).returns(false)
-      Alias.expects(:save_to_file).with("#{ENV['HOME']}/.aliases.yml", {:aliases=>{:instance_method=>hash}}.to_yaml)
+      Alias.expects(:save_to_file).with("#{ENV['HOME']}/.alias.yml", {:aliases=>{:instance_method=>hash}}.to_yaml)
       capture_stdout { @console.save_aliases }.should =~ /Save/
     end
 
@@ -30,10 +30,10 @@ class Alias::ConsoleTest < Test::Unit::TestCase
       capture_stdout { @console.save_aliases }.should =~ /Didn't save/
     end
 
-    test "saves aliases to config/aliases.yml if config/ exists" do
+    test "saves aliases to config/alias.yml if config/ exists" do
       File.expects(:directory?).returns(true)
       @console.create_aliases :instance_method, {"Bluh"=>{"blah"=>"b2"}}
-      Alias.expects(:save_to_file).with("config/aliases.yml", anything)
+      Alias.expects(:save_to_file).with("config/alias.yml", anything)
       capture_stdout { @console.save_aliases }
     end
 
@@ -41,7 +41,7 @@ class Alias::ConsoleTest < Test::Unit::TestCase
       hash = {"Bluh"=>{"blah"=>"b2"}}
       @console.create_aliases :instance_method, hash
       Alias.expects(:read_config_file).returns({:aliases=>{:instance_method=>{"Bluh"=>{"bling"=>"bl"}}}})
-      Alias.expects(:save_to_file).with("#{ENV['HOME']}/.aliases.yml", 
+      Alias.expects(:save_to_file).with("#{ENV['HOME']}/.alias.yml",
         {:aliases=>{:instance_method=>{"Bluh"=>{'bling'=>'bl', 'blah'=>'b2'}}}}.to_yaml)
       capture_stdout { @console.save_aliases }
     end

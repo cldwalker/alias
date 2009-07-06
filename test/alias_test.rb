@@ -2,9 +2,9 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 class AliasTest < Test::Unit::TestCase
   context "Alias" do
-    test "loads config file config/aliases.yml if found" do
-      File.expects(:exists?).with('config/aliases.yml').returns(true)
-      Alias.config_file.should == 'config/aliases.yml'
+    test "loads config file config/alias.yml if found" do
+      File.expects(:exists?).with('config/alias.yml').returns(true)
+      Alias.config_file.should == 'config/alias.yml'
     end
 
     context "create" do
