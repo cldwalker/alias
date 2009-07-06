@@ -54,6 +54,14 @@ module Alias
       def class_or_module(klass) #:nodoc:
         Util.any_const_get(klass).is_a?(Class) ? 'class' : 'module'
       end
+
+      def inherited(subclass) #:nodoc:
+        @creators ||= []
+        @creators << subclass
+      end
+
+      # Array of all Creator subclasses.
+      def creators; @creators; end
     end
 
     attr_accessor :verbose, :force, :aliases

@@ -8,7 +8,8 @@ module Alias
       @force = false
     end
 
-    attr_accessor :creators, :verbose, :force
+    attr_accessor :verbose, :force
+    attr_reader :creators
 
     def create_aliases(creator_type, aliases_hash, options={})
       return unless (creator = create_creator(creator_type))
@@ -23,6 +24,7 @@ module Alias
 
     def console_create_aliases(creator_type, aliases_hash, options={})
       @created_aliases ||= {}
+      creator_type = (all_creator_types.find {|e| e[/^#{creator_type}/] } || creator_type).to_sym
       if create_aliases(creator_type, aliases_hash, options)
         @created_aliases[creator_type] = aliases_hash
       end
@@ -39,7 +41,10 @@ module Alias
     end
 
     #:stopdoc:
-    def creator_types; @creators.keys; end
+    def all_creator_types
+      Creator.creators.map {|e| Util.underscore(e.to_s[/::(\w+)Creator/,1]) }
+    end
+
     def aliases_of(creator_type)
       @creators[creator_type] && @creators[creator_type].aliases
     end

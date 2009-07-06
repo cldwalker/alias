@@ -82,7 +82,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
 
     context "search" do
       def setup_search
-        @manager.creators = {:constant=>Alias::ConstantCreator.new}
+        @manager.instance_variable_set "@creators", {:constant=>Alias::ConstantCreator.new}
         @manager.expects(:all_aliases).returns([{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'Ab'}])
       end
 

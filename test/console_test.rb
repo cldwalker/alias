@@ -2,9 +2,15 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 class Alias::ConsoleTest < Test::Unit::TestCase
   before(:all) { @console = Object.new.extend(Alias::Console) }
+
   test "create_aliases doesn't save failed alias creation" do
     capture_stderr { @console.create_aliases :blah, {} }
     Alias.manager.instance_eval("@created_aliases").should == {}
+  end
+
+  test "create_aliases takes partial creator names" do
+    Alias.manager.expects(:create_aliases).with(:instance_method, {}, {})
+    @console.create_aliases(:in, {})
   end
 
   context "save_aliases" do
