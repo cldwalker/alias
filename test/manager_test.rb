@@ -81,19 +81,25 @@ class Alias::ManagerTest < Test::Unit::TestCase
     end
 
     context "search" do
-      def setup_search
+      before(:each) {
         @manager.instance_variable_set "@creators", {:constant=>Alias::Creators::ConstantCreator.new}
-        @manager.expects(:all_aliases).returns([{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'Ab'}])
-      end
+        @manager.stubs(:all_aliases).returns([{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'B'}])
+      }
 
-      test "with string returns exact match" do
-        setup_search
-        @manager.search(:name=>'Array').should == [{:name=>'Array', :alias=>'A'}]
+      test "key and symbol value" do
+        @manager.search(:name=>:Array).should == [{:name=>'Array', :alias=>'A'}]
       end
       
-      test "with regex returns multiple matches " do
-        setup_search
-        @manager.search(:name=>/A/).should == [{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'Ab'}]
+      test "with key and string value" do
+        @manager.search(:name=>'A').should == [{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'B'}]
+      end
+
+      test "with a string" do
+        @manager.search('Array').should == [{:name=>'Array', :alias=>'A'}]
+      end
+
+      test "with multiple search terms" do
+        @manager.search(:name=>'A', :alias=>'A').should == [{:name=>'Array', :alias=>'A'}]
       end
     end
 end
