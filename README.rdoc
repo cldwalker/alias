@@ -1,9 +1,8 @@
 == Description
 
-Creates aliases for class methods, instance methods and constants by specifying
-them in a YAML config file. By storing your aliases, it becomes possible to easily
-share and search them. Although the default aliases are created with the irb user in mind,
-it's possible to create your own alias types. See 'Customize Alias' below.
+Creates, manages and searches aliases for class methods, instance methods, constants and
+delegated methods via a YAML config file. Although the default alias types are created with
+the irb user in mind, it's possible to create your own alias types.
 
 == Setup
 
@@ -11,97 +10,78 @@ Install the gem with:
 
     sudo gem install cldwalker-alias -s http://gems.github.com
 
-The easiest setup simply involves dropping two lines in your .irbrc:
+The basic setup is simply drop two lines in your .irbrc:
 
     require 'alias' 
     Alias.create
 
-This setup assumes you have an aliases.yml in the current directory or a config/aliases.yml.
-If neither is the case, pass a :file option to create():
+This will assume a file in config/alias.yml or ~/.alias.yml. If you want it somewhere else,
+pass a :file option to create():
 
     Alias.create :file=>"/path/to/my/clandestine_aliases.yml"
 
-If you'd like to define your aliases without a config file, pass Alias.create() a block and
-call methods as if they were top level keys in the config:
+If you'd like to define your aliases without a config file, pass Alias.create() an :aliases option:
 
     Alias.create :verbose=>true, :aliases=>{
       :constant=>{'Array' = 'A'},
       :instance_method=>{'String'=>{'downcase'=>'dc' }, 'Array'=>{'select'=>'s'}}
     }
 
-== Irb/Console Use
+== Usage
 
-To use in irb or your own console, simply include the console class:
+An example within Rails' script/console:
 
-    irb>>extend Alias::Console
+    bash> script/console
+    >> require 'alias'
+    => true
+
+    # Import alias methods
+    >> extend Alias::Console
     => main
 
-Currently only two methods are imported: search and create.
-Search lists your aliases and create, well, creates aliases.
+    # First let's see what ruby code Alias generates to create an alias.
+    >> create_aliases :class_method, {"ActiveRecord::Base"=>{'find'=>'[]'}}, :pretend=>true
 
-Create:
-  
-    irb>>create :constant, "Alias"=>"A"
-    =>nil
+    class ::ActiveRecord::Base; class<< self; alias_method :[], :find; end; end
+    => true
 
-    irb>>A
-    =>Alias
-  
-Search:
-    
-    # Searches all alias types for an Alias
-    irb>>search :alias=>'A'
-    A = Alias (type: constant)
+    # Create the above class method alias
+    >> create_aliases :class_method, "ActiveRecord::Base"=>{'find'=>'[]'}
+    => true
 
-    #Searches all alias types for any aliases with an A
-    irb>>search :alias=>/A/
-    A = Alias (type: constant)
-    AB = ActiveRecord::Base (type: constant)
+    # Create the above constant alias
+    >> create_aliases :constant, "ActiveRecord::Base"=>"AB"
+    => true
+    # Verify that it worked
+    >> AB
+    => ActiveRecord::Base
 
-    #Searches only class_method types named 'find'
-    irb>>search :type=>'class_method', :name=>'find'
-    [] = find (type: class_method, class: ActiveRecord::Base)
-  
+    # If we try to create the constant alias again, Alias prevents us and warns us
+    >> create_aliases :constant, "ActiveRecord::Base"=>"AB"
+    Constant 'AB' not created since it already exists
+    => false
+    # We can force Alias to override a method, class or constant that already exists
+    >> create_aliases :constant, {"ActiveRecord::Base"=>"AB"}, :force=>true
+    => true
 
+    # Create the above instance method alias
+    >> create_aliases :instance_method, "ActiveRecord::Base"=>{"update_attribute"=>'ua'}
+    => true
+
+    # By default aliases are saved to config/alias.yml in rails or ~/.alias.yml if not.
+    >> save_aliases
+    Saved created aliases to config/alias.yml.
+    => true
 
 == Configuration
 
-For an example config file see aliases.yml.example.
-
-Options are: 
-
-* verbose : true or false
-* constant: Alias constants no matter how many levels down. Takes a hash of constants as strings,
-  mapping constants to their aliases.
-    Example: {'Date'=>'D', 'ActiveRecord::Base'=>'AB'}
-* instance_method : Alias methods for the instances of specified classes. Takes a nested hash with Ruby classes as string keys. Each class should point
-  to a hash of methods, with the original methods mapping to the alias method.
-    Example: {'String'=>{'downcase'=>'dc'}}
-* class_method : Alias class methods. Takes the same format as instance_method.
-    Example: {'Date'=>{'day_fraction_to_time'=>'dftt'}}
+For an example config file see test/aliases.yml.
+For an explanation of the config file format see Alias.config_file.
  
-== Customize Alias
+== Creating Custom Alias Types
 
-You can create your own alias type by creating an Alias::*Creator Class. The * is there for the alias type name.
-Suppose you want to create a my_instance_method alias type. Simply pass a my_instance_method key
-with its appropriate aliases hash in the config. Then create your my_instance_method_creator class:
-
-    module Alias
-      class MyInstanceMethodCreator < Creator
-        def create_aliases(aliases_hash)
-          # My way of aliasing
-          # ...
-        end
-      end
-    end
-
-Notice that the class should be a camelized version of the alias type and inherit from Alias::Creator.
-At a minimum, make a create_aliases() to make custom aliases from the config data.
-See creator.rb for more methods you can hook into.
+See Alias::Creator.
 
 ==  Todo
-
-* Alias/forward methods from one object to another. This will be useful for creating
-  'commands' in irb.
-* Provide an auto_alias method for creators.
-* Add more RDoc documentation. 
+* Allow loading of select aliases in a file.
+* Provide a way autogenerate aliases with a given proc.

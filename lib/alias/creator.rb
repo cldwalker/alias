@@ -1,8 +1,16 @@
 module Alias
   # Namespace for subclasses of Alias::Creator.
   class Creators; end
-  # This is the base creator class. To create a valid creator, a creator must define Alias::Creator.map and Alias::Creator.generate.
-  # Although not required, creators should enforce validation of their aliases with Alias::Creator.valid.
+  # This is the base creator class. To be a valid subclass, the creator must define Alias::Creator.map and Alias::Creator.generate.
+  # Although not required, creators should enforce validation of their aliases with Alias::Creator.valid. Also, the creator should
+  # be named in the format Alias::Creators::*Creator where the asterisk stands for any unique string. Since that string is converted
+  # to an underscored version when referenced in the console, it's recommended to make it camel case. For example,
+  # Alias::Creators::InstanceMethodCreator is referenced by it's underscored version :instance_method.
+  # 
+  # To better understand how a creator works, here's the steps a creator goes through when creating aliases:
+  # * map() : Maps the hash from a config file or console input into an array of alias hashes.
+  # * valid() : Defines a validation that each alias hash must pass.
+  # * generate() : Given the array of alias hashes, generates the string of ruby code to be evaled for alias creation.
   class Creator
     class AbstractMethodError < StandardError; end
     class FailedAliasCreationError < StandardError; end
