@@ -18,14 +18,14 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "alias"
-    s.description = "Provides aliases for class names, class methods, instance methods and more. Mainly for console use."
+    s.summary = "Creates, manages and saves aliases for class methods, instance methods, constants, delegated methods and more."
+    s.description = "Creates aliases for class methods, instance methods, constants, delegated methods and more. Aliases can be easily searched or saved as YAML config files to load later. Custom alias types are easy to create with the DSL Alias provides.  Although Alias was created with the irb user in mind, any Ruby console program can hook into Alias for creating configurable aliases."
     s.email = "gabriel.horner@gmail.com"
-    s.homepage = "http://github.com/cldwalker/alias"
-    s.summary = s.description
+    s.homepage = "http://tagaholic.me/alias/"
     s.authors = ["Gabriel Horner"]
     s.has_rdoc = true
     s.extra_rdoc_files = ["README.rdoc", "LICENSE.txt"]
-    s.files = FileList["Rakefile", "VERSION.yml", "README.rdoc", "LICENSE.txt", "aliases.yml.example", "{lib,test}/**/*"]
+    s.files = FileList["Rakefile", "VERSION.yml", "README.rdoc", "CHANGELOG.rdoc", "LICENSE.txt", "{lib,test}/**/*"]
   end
 
 rescue LoadError
