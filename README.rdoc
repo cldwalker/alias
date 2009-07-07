@@ -1,10 +1,9 @@
 == Description
 
-Creates, manages and saves aliases for class methods, instance methods, constants,
-delegated methods and more. Custom alias types are easy to create with the dsl Alias provides.
-Alias also provides searching of aliases. Although Alias was created with
-the irb user in mind, any Ruby console program can hook into Alias for creating configurable
-aliases.
+Creates aliases for class methods, instance methods, constants, delegated methods and more. Aliases
+can be easily searched or saved as YAML config files to load later. Custom alias types are easy to
+create with the DSL Alias provides.  Although Alias was created with the irb user in mind, any Ruby
+console program can hook into Alias for creating configurable aliases.
 
 == Setup
 

@@ -1,3 +1,9 @@
+== 0.2.0
+* Complete refactoring.
+* New alias types can be created easily with the DSL for Creator classes.
+* Added two new alias types, any_to_instance_method and class_to_instance_method.
+* Better tests and docs.
+
 == 0.1.2
 * Added search and console functionality.
 * Added better tests.
