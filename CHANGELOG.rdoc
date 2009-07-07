@@ -1,3 +1,6 @@
+== 0.2.1
+* Adding gem to rubyforge.
+
 == 0.2.0
 * Complete refactoring.
 * New alias types can be created easily with the DSL for Creator classes.
