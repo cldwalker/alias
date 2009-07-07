@@ -1,3 +1,5 @@
+# Creates aliases of class methods. Expects a hash of classes/modules mapped to a hash of class methods and their aliases
+# i.e. {'Date'=>{'today'=>'t'}}.
 class Alias::Creators::ClassMethodCreator < Alias::Creator
   map do |config|
     config.inject([]) {|t,(klass,aliases)|

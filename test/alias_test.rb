@@ -39,7 +39,7 @@ class AliasTest < Test::Unit::TestCase
     
       test "with verbose option sets manager's verbose" do
         Alias.manager.verbose.should == false
-        Alias.create :verbose=>true, :aliases=>{}
+        Alias.create :verbose=>true, :aliases=>{}, :file=>false
         Alias.manager.verbose.should == true
       end
 

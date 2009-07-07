@@ -1,3 +1,8 @@
+# Creates instance methods which call class methods. These are delegations rather than aliases.
+# Expects a hash of classes/modules of the instance method mapped
+# to a hash of the class methods and the instance method names. 
+# For example, the hash {"MyDate"=>{'Date.today'=>'t'}} would create a MyDate.t instance method
+# which directly calls Date.today.
 class Alias::Creators::ClassToInstanceMethodCreator < Alias::Creator
   map do |config|
     config.inject([]) {|t,(klass,hash)|

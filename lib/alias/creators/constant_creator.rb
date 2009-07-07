@@ -1,3 +1,4 @@
+# Creates constants of aliases expecting a hash of existing constants mapped to their aliases.
 class Alias::Creators::ConstantCreator < Alias::Creator
   map {|config| config.map {|k,v| {:name=>k, :alias=>v}} }
 

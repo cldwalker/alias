@@ -1,5 +1,10 @@
 module Alias
-  # This class manages creation, searching and saving of aliases.
+  # This class manages creation, searching and saving of aliases. Aliases are created as follows:
+  # * Alias hashes are read in by Alias.create and/or input through the console via Alias::Console.create_aliases.
+  # * These alias hashes are passed to Alias::Manager.create_aliases. An Alias::Manager object passes each alias hash to 
+  #   to the correct Alias::Creator subclass by interpreting the creator type.
+  # * Each creator converts their alias hash to an alias hash array and runs them through their defined validators, Alias::Validator objects.
+  # * The aliases that meet the validation conditions are then created using Kernel.eval.
   class Manager
 
     def initialize #:nodoc:
@@ -8,15 +13,22 @@ module Alias
       @force = false
     end
 
-    attr_accessor :verbose, :force
-    attr_reader :creators, :created_aliases
+    # When true, all failed validations print their message. Takes an array of creator type symbols or a boolean to set all creators.
+    attr_accessor :verbose
+    # When true, optional validations will be skipped. Takes an array of creator type symbols or a boolean to set all creators.
+    attr_accessor :force
+    # A hash of creator objects that have been used by creator type.
+    attr_reader :creators
+    # A hash of created aliases by creator type.
+    attr_reader :created_aliases
 
     # The main method for creating aliases. Takes a creator type, a hash of aliases whose format is defined per creator and the
     # following options:
-    # :verbose: Sets the verbose flag to print a message whenever an alias validation fails. Default is the creator's verbose flag.
-    # :force: Sets the force flag to bypass optional validations. Default is the creator's manager flag.
-    # :pretend: Instead of creating aliases, prints out the ruby code that would be evaluated by Kernel.eval to create the aliases.
-    #  Default is false.
+    # 
+    # [:verbose] Sets the verbose flag to print a message whenever an alias validation fails. Default is the creator's verbose flag.
+    # [:force] Sets the force flag to bypass optional validations. Default is the creator's manager flag.
+    # [:pretend] Instead of creating aliases, prints out the ruby code that would be evaluated by Kernel.eval to create the aliases.
+    #            Default is false.
     def create_aliases(creator_type, aliases_hash, options={})
       return unless (creator = create_creator(creator_type))
       creator.verbose = options[:verbose] ? options[:verbose] : verbose_creator?(creator_type)
@@ -24,7 +36,7 @@ module Alias
       creator.create(aliases_hash.dup, options[:pretend] || false)
       true
     rescue Creator::AbstractMethodError
-      $stderr.puts "'#{creator.class}' doesn't have the necessary methods defined."
+      $stderr.puts $!.message
     rescue Creator::FailedAliasCreationError
       $stderr.puts "'#{creator.class}' failed to create aliases with error:\n#{$!.message}"
     end
@@ -59,7 +71,7 @@ module Alias
       end
     end
 
-    # Searches all created alias hashes with a hash or a string. If a string the alias key searched is :name.
+    # Searches all created alias hashes with a hash or a string. If a string, the alias key searched is :name.
     # If a hash, the key should should be an alias key and the value the search term.
     # All values are treated as regular expressions. Alias keys vary per creator but some of the common ones are :name, :class and :alias.
     # Multiple keys for a hash will AND the searches.

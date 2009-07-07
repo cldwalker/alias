@@ -1,12 +1,13 @@
 module Alias
-  module Util
+  # A collection of utility functions used throughout.
+  module Util #:nodoc:
     extend self
     # simplified from ActiveSupport
     def slice(hash, *keys)
       hash.reject {|key,| !keys.include?(key) }
     end
 
-    def slice_off!(hash, *keys)
+    def slice_off!(hash, *keys) #:nod
       new_hash = slice(hash,*keys)
       keys.each {|e| hash.delete(e)}
       new_hash
@@ -45,7 +46,7 @@ module Alias
       end
     end
 
-    #simplified from ActiveSupport
+    #simplified version from ActiveSupport
     def camelize(string)
       string.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
     end

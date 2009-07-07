@@ -1,3 +1,5 @@
+# Creates aliases of instance methods. Expects a hash of classes/modules mapped to a hash of instance methods and their aliases
+# i.e. {"String"=>{'to_s'=>'s'}}.
 class Alias::Creators::InstanceMethodCreator < Alias::Creator
   map do |config|
     config.inject([]) {|t,(klass,aliases)|

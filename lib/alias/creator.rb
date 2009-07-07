@@ -1,4 +1,5 @@
 module Alias
+  # Namespace for subclasses of Alias::Creator.
   class Creators; end
   # This is the base creator class. To create a valid creator, a creator must define Alias::Creator.map and Alias::Creator.generate.
   # Although not required, creators should enforce validation of their aliases with Alias::Creator.valid.
@@ -6,18 +7,19 @@ module Alias
     class AbstractMethodError < StandardError; end
     class FailedAliasCreationError < StandardError; end
     class<<self
-      # Creates a validation expectation for the creator with a validator. A validator must be specified with the :if or :unless option.
-      # If the validator results in false for an alias, the alias is skipped.
+      # Creates a validation expectation for the creator by giving it an Alias::Validator object aka validator. 
+      # This method must be given an :if or :unless option. If the :if option returns false or :unless option
+      # returns true for an alias, the alias is skipped.
       # ==== Options:
-      # [:if] A proc to serve as the validator or a symbol referencing an existing validator. The validator should evaluate to true
-      #       for the validation to pass. The validator receives different arguments depending on the key's name.
-      #       If the key name is the same as an alias's attribute, then only that current alias attribute is passed. Otherwise, the
-      #       alias hash is passed. The :with option overrides what's passed to the validator.
+      # [:if] Takes a proc or a symbol referencing a registered validator. This proc must evaluate to true
+      #       for the validation to pass. See Alias::Validator.validate for what arguments this proc receives by default. See
+      #       Alias::Validator.default_validators for validators that can be referenced by symbol.
       # [:unless] Same as :if option but the result is negated.
-      # [:message] A proc to print a message if the creator's verbose flag is set. Receives same arguments as validator. If a previous
-      #            validator is referenced in :unless or :if, then their :message is inherited.
-      # [:with]  An array of alias attributes which specifies the current alias attributes to pass the validator
-      #          and message procs as an array.
+      # [:message] A proc to print a message if the creator's verbose flag is set. Receives same arguments as :if and :unless procs. 
+      #            If a previous validator is referenced in :unless or :if, then their :message is inherited.
+      # [:with]  An array of alias attributes/keys which specify the current alias attributes to pass to the validator procs.
+      #          Overrides default argument a validator proc receives.
+      # [:optional] When set to true, this option can be overridden in conjunction with a creator's force flag. Default is false.
       def valid(key, options={})
         begin
           validators[key] = Validator.new(options.merge(:key=>key, :creator=>self))
@@ -29,8 +31,8 @@ module Alias
         end
       end
 
-      # Stores validators for class by alias attribute.
-      def validators
+      # Stores validators per alias attribute/key.
+      def validators #:nodoc:
         @validators ||= {}
       end
 
@@ -65,14 +67,18 @@ module Alias
       def creators; @creators; end
     end
 
-    attr_accessor :verbose, :force, :aliases
+    # Same purpose as Alias::Manager.verbose and Alias::Manager.force but unlike them these only take a boolean.
+    attr_accessor :verbose, :force
+    # Array of alias hashes that have been created.
+    attr_accessor :aliases
 
-    def initialize(options={})
+    def initialize(options={}) #:nodoc:
       @verbose = false
       @force = false
       @aliases = []
     end
 
+    # Main method used to create aliases. Handles mapping, validation and creation of aliases.
     def create(aliases_hash, pretend=false)
       aliases_array = self.class.maps_config(aliases_hash)
       delete_invalid_aliases(aliases_array)
@@ -86,6 +92,7 @@ module Alias
       end
     end
 
+    # Deletes invalid alias hashes that fail defined validators for a creator.
     def delete_invalid_aliases(arr)
       arr.delete_if {|alias_hash|
         !self.class.validators.all? {|attribute, validator|

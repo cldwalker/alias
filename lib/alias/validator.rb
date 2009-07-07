@@ -1,11 +1,11 @@
 module Alias
-  # Creates validations declared by Alias::Creator.valid.
+  # Creates validations for use with Alias::Creator.valid.
   class Validator
     class MissingConditionError < StandardError; end
     class InvalidValidatorError < StandardError; end
 
     attr_reader :validation_proc, :message
-    # Options are describe in Alias::Creator.valid.
+    # Options are described in Alias::Creator.valid.
     def initialize(options={})
       raise ArgumentError unless options[:key] && options[:creator]
       @condition = options[:if] || options[:unless] || raise(MissingConditionError)
@@ -18,8 +18,10 @@ module Alias
       @message = default_message unless @message.is_a?(Proc)
     end
 
-    # Validates given alias objects. If it returns true, alias hash is aliased. Otherwise it's ignored.
-    # Prints a message for failed validations if creator has verbose flag set.
+    # Validates a given alias hash with the validator proc defined by :if or :unless in Alias::Creator.valid.
+    # Default arguments that these procs receive works as follows:
+    # If the validation key is the same name as any of the keys in the alias hash, then only the value of that
+    # that alias key is passed to the procs. If not, then the whole alias hash is passed.
     def validate(current_creator, alias_hash, current_attribute)
       return true if @optional && current_creator.force
       arg = create_proc_arg(alias_hash, current_attribute)
@@ -49,9 +51,10 @@ module Alias
     #:startdoc:
 
     class <<self
+      # Hash of registered validators.
       attr_reader :validators
 
-      # Registers validators which creators can inherit from.
+      # Registers validators which creators can reference as symbols in Alias::Creator.valid.
       def register_validators(validators)
         @validators ||= {}
         validators.each do |e|
@@ -59,7 +62,7 @@ module Alias
         end
       end
 
-      # Default validators are :constant, :class, :instance_method and :class_method .
+      # Default validators are :constant, :class, :instance_method and :class_method.
       def default_validators
         [
           {:key=>:constant, :if=>lambda {|e| any_const_get(e) }, :message=>lambda {|e| "Constant '#{e}' not created since it doesn't exist"}},

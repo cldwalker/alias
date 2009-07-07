@@ -1,5 +1,5 @@
 module Alias
-  # This module contains the main methods to be accessed from a console/irb. Simply extend Alias::Console in your ruby shell.
+  # This module contains the main methods to be accessed from a ruby shell i.e. irb. Simply extend Alias::Console in your ruby shell.
   module Console
     # See Alias::Manager.create_aliases for usage.
     def create_aliases(*args)
