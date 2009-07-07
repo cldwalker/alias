@@ -11,7 +11,7 @@ Install the gem with:
 
     sudo gem install cldwalker-alias -s http://gems.github.com
 
-The basic setup is simply drop two lines in your .irbrc:
+To setup, simply drop these two lines in your .irbrc:
 
     require 'alias' 
     Alias.create
