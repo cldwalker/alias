@@ -12,8 +12,8 @@ module Alias
       Alias.manager.save_aliases(file)
     end
 
-    # Lists all created aliases if no arguments. To search aliases, pass it a search term as defined by Alias::Manager.search.
-    def list_aliases(*args)
+    # Searches aliases with a search term as defined by Alias::Manager.search. If no arguments given, all aliases are listed.
+    def search_aliases(*args)
       args.empty? ? Alias.manager.all_aliases : Alias.manager.search(*args)
     end
   end

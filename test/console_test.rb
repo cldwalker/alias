@@ -13,9 +13,9 @@ class Alias::ConsoleTest < Test::Unit::TestCase
     @console.create_aliases(:in, {})
   end
 
-  test "list_aliases lists aliases if given nothing" do
+  test "search_aliases lists aliases if given nothing" do
     Alias.manager.expects(:all_aliases)
-    @console.list_aliases
+    @console.search_aliases
   end
 
   context "save_aliases" do
