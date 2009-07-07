@@ -13,7 +13,7 @@ class Alias::Creators::ClassToInstanceMethodCreatorTest < Test::Unit::TestCase
       @manager.create_aliases(:class_to_instance_method, hash)
     end
 
-    test "deletes invalid delegate classes" do
+    test "deletes invalid to classes" do
       expect_aliases 'String'=>{'String.to_s'=>'s'}
       create_aliases 'String'=>{'AnotherString.name'=>'n', 'String.to_s'=>'s'}
     end
@@ -28,7 +28,7 @@ class Alias::Creators::ClassToInstanceMethodCreatorTest < Test::Unit::TestCase
       create_aliases 'String'=>{'Date.civil'=>'strip', 'Date.commercial'=>'s'}
     end
 
-    test "deletes invalid delegate methods" do
+    test "deletes invalid to methods" do
       expect_aliases 'String'=>{'Date.civil'=>'c'}
       create_aliases 'String'=>{'Date.civil'=>'c', 'Date.uncivil'=>'uc'}
     end
