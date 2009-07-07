@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>: Alias::Manager [RDoc Documentation]</title>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <link href='../../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='class' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>
+          <span class='type'>Class</span>
+          Alias::Manager
+        </h1>
+        <ol class='paths'>
+          <li>
+            <a href="../../files/lib/alias/manager_rb.html">lib/alias/manager.rb</a>
+          </li>
+        </ol>
+        <div class='parent'>
+          Parent:
+          <strong>Object</strong>
+        </div>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <p>
+            This class manages creation, searching and saving of aliases. Aliases are
+            created as follows:
+            </p>
+            <ul>
+            <li><a href="../Alias.html">Alias</a> hashes are read in by <a
+            href="../Alias.html#M000001">Alias.create</a> and/or input through the
+            console via <a
+            href="Console.html#M000004">Alias::Console.create_aliases</a>.
+            
+            </li>
+            <li>These alias hashes are passed to <a
+            href="Manager.html#M000017">Alias::Manager.create_aliases</a>. An <a
+            href="Manager.html">Alias::Manager</a> object passes each alias hash to to
+            the correct <a href="Creator.html">Alias::Creator</a> subclass by
+            interpreting the creator type.
+            
+            </li>
+            <li>Each creator converts their alias hash to an alias hash array and runs them
+            through their defined validators, <a
+            href="Validator.html">Alias::Validator</a> objects.
+            
+            </li>
+            <li>The aliases that meet the validation conditions are then created using
+            Kernel.eval.
+            
+            </li>
+            </ul>
+          </div>
+          <div id='method-list'>
+            <h2>Methods</h2>
+            <h3>public instance</h3>
+            <ol>
+              <li><a href="#M000021">all_aliases</a></li>
+              <li><a href="#M000018">console_create_aliases</a></li>
+              <li><a href="#M000017">create_aliases</a></li>
+              <li><a href="#M000019">save_aliases</a></li>
+              <li><a href="#M000020">search</a></li>
+            </ol>
+          </div>
+          <div id='section'>
+            <div id='attribute-list'>
+              <h2 class='section-bar'>Attributes</h2>
+              <div class='name-list'>
+                <table>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>created_aliases</td>
+                    <td class='context-item-value'>[R]</td>
+                    <td class='context-item-desc'>
+                      
+                      A hash of created aliases by creator type.
+                    </td>
+                  </tr>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>creators</td>
+                    <td class='context-item-value'>[R]</td>
+                    <td class='context-item-desc'>
+                      
+                      A hash of creator objects that have been used by creator type.
+                    </td>
+                  </tr>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>force</td>
+                    <td class='context-item-value'>[RW]</td>
+                    <td class='context-item-desc'>
+                      
+                      When true, optional validations will be skipped. Takes an array of creator
+                      type symbols or a boolean to set all creators.
+                    </td>
+                  </tr>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>verbose</td>
+                    <td class='context-item-value'>[RW]</td>
+                    <td class='context-item-desc'>
+                      
+                      When true, all failed validations print their message. Takes an array of
+                      creator type symbols or a boolean to set all creators.
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div id='methods'>
+              <h2>Public instance methods</h2>
+              <div class='public-instance method' id='method-M000021'>
+                <a name='M000021'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>all_aliases</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Returns an array of all created alias hashes. The alias hash will have a
+                  :type key which contains the creator type it belongs to.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000021-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000021-source'><span class="ruby-comment cmt"># File lib/alias/manager.rb, line 96</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">all_aliases</span>&#x000A;      <span class="ruby-ivar">@all_aliases</span> <span class="ruby-operator">||=</span> <span class="ruby-ivar">@creators</span>.<span class="ruby-identifier">inject</span>([]) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span>, (<span class="ruby-identifier">type</span>, <span class="ruby-identifier">creator</span>)<span class="ruby-operator">|</span>&#x000A;        <span class="ruby-identifier">t</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">creator</span>.<span class="ruby-identifier">aliases</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>[<span class="ruby-identifier">:type</span>] = <span class="ruby-identifier">type</span>.<span class="ruby-identifier">to_s</span>}&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-instance method' id='method-M000018'>
+                <a name='M000018'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>console_create_aliases</span>
+                  <span class='arguments'>(creator_type, aliases_hash, options={})</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Creates aliases in the same way as <a
+                  href="Manager.html#M000017">create_aliases</a> while keeping track of
+                  what&#8217;s created. But differs in that creator types can be accessed
+                  with just the first few unique letters of a type. For example, you can pass
+                  :in to mean :instance_method. Also, the verbose flag is set by default.
+                  Examples:
+                  </p>
+                  <pre>console_create_aliases :in, &quot;String&quot;=&gt;{&quot;to_s&quot;=&gt;&quot;s&quot;}&#x000A;console_create_aliases :con, {&quot;ActiveRecord::Base&quot;=&gt;&quot;AB&quot;}, :pretend=&gt;true</pre>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000018-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000018-source'><span class="ruby-comment cmt"># File lib/alias/manager.rb, line 50</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">console_create_aliases</span>(<span class="ruby-identifier">creator_type</span>, <span class="ruby-identifier">aliases_hash</span>, <span class="ruby-identifier">options</span>={})&#x000A;      <span class="ruby-identifier">options</span> = {<span class="ruby-identifier">:verbose=</span><span class="ruby-operator">&gt;</span><span class="ruby-keyword kw">true</span>}.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">options</span>)&#x000A;      <span class="ruby-ivar">@created_aliases</span> <span class="ruby-operator">||=</span> {}&#x000A;      <span class="ruby-identifier">creator_type</span> = (<span class="ruby-identifier">all_creator_types</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">find</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>[<span class="ruby-node">/^#{creator_type}/</span>] } <span class="ruby-operator">||</span> <span class="ruby-identifier">creator_type</span>).<span class="ruby-identifier">to_sym</span>&#x000A;      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">create_aliases</span>(<span class="ruby-identifier">creator_type</span>, <span class="ruby-identifier">aliases_hash</span>, <span class="ruby-identifier">options</span>)&#x000A;        <span class="ruby-ivar">@created_aliases</span>[<span class="ruby-identifier">creator_type</span>] = <span class="ruby-identifier">aliases_hash</span>&#x000A;        <span class="ruby-keyword kw">true</span>&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-keyword kw">false</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-instance method' id='method-M000017'>
+                <a name='M000017'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>create_aliases</span>
+                  <span class='arguments'>(creator_type, aliases_hash, options={})</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  The main method for creating aliases. Takes a creator type, a hash of
+                  aliases whose format is defined per creator and the following options:
+                  </p>
+                  <dl>
+                  <dt>:verbose</dt><dd>Sets the verbose flag to print a message whenever an alias validation
+                  fails. Default is the creator&#8217;s verbose flag.
+                  
+                  </dd>
+                  <dt>:force</dt><dd>Sets the force flag to bypass optional validations. Default is the
+                  creator&#8217;s manager flag.
+                  
+                  </dd>
+                  <dt>:pretend</dt><dd>Instead of creating aliases, prints out the ruby code that would be
+                  evaluated by Kernel.eval to create the aliases. Default is false.
+                  
+                  </dd>
+                  </dl>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000017-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000017-source'><span class="ruby-comment cmt"># File lib/alias/manager.rb, line 32</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_aliases</span>(<span class="ruby-identifier">creator_type</span>, <span class="ruby-identifier">aliases_hash</span>, <span class="ruby-identifier">options</span>={})&#x000A;      <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> (<span class="ruby-identifier">creator</span> = <span class="ruby-identifier">create_creator</span>(<span class="ruby-identifier">creator_type</span>))&#x000A;      <span class="ruby-identifier">creator</span>.<span class="ruby-identifier">verbose</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:verbose</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:verbose</span>] <span class="ruby-operator">:</span> <span class="ruby-identifier">verbose_creator?</span>(<span class="ruby-identifier">creator_type</span>)&#x000A;      <span class="ruby-identifier">creator</span>.<span class="ruby-identifier">force</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:force</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:force</span>] <span class="ruby-operator">:</span> <span class="ruby-identifier">force_creator?</span>(<span class="ruby-identifier">creator_type</span>)&#x000A;      <span class="ruby-identifier">creator</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">aliases_hash</span>.<span class="ruby-identifier">dup</span>, <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:pretend</span>] <span class="ruby-operator">||</span> <span class="ruby-keyword kw">false</span>)&#x000A;      <span class="ruby-keyword kw">true</span>&#x000A;    <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Creator</span><span class="ruby-operator">::</span><span class="ruby-constant">AbstractMethodError</span>&#x000A;      <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">$!</span>.<span class="ruby-identifier">message</span>&#x000A;    <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Creator</span><span class="ruby-operator">::</span><span class="ruby-constant">FailedAliasCreationError</span>&#x000A;      <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;'#{creator.class}' failed to create aliases with error:\n#{$!.message}&quot;</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-instance method' id='method-M000019'>
+                <a name='M000019'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>save_aliases</span>
+                  <span class='arguments'>(file=nil)</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Saves aliases that were created by console_create_aliases. Can take an
+                  optional file to save to. See <a
+                  href="Console.html#M000005">Alias::Console.save_aliases</a> for default
+                  files this method saves to.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000019-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000019-source'><span class="ruby-comment cmt"># File lib/alias/manager.rb, line 64</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">save_aliases</span>(<span class="ruby-identifier">file</span>=<span class="ruby-keyword kw">nil</span>)&#x000A;      <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@created_aliases</span>&#x000A;        <span class="ruby-constant">Alias</span>.<span class="ruby-identifier">add_to_config_file</span>(<span class="ruby-ivar">@created_aliases</span>, <span class="ruby-identifier">file</span>)&#x000A;        <span class="ruby-keyword kw">true</span>&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;Didn't save. No created aliases detected.&quot;</span>&#x000A;        <span class="ruby-keyword kw">false</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-instance method' id='method-M000020'>
+                <a name='M000020'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>search</span>
+                  <span class='arguments'>(search_hash)</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Searches all created alias hashes with a hash or a string. If a string, the
+                  alias key searched is :name. If a hash, the key should should be an alias
+                  key and the value the search term. All values are treated as regular
+                  expressions. <a href="../Alias.html">Alias</a> keys vary per creator but
+                  some of the common ones are :name, :class and :alias. Multiple keys for a
+                  hash will AND the searches. Examples:
+                  </p>
+                  <pre>search 'to_'&#x000A;search :class=&gt;&quot;Array&quot;, :name=&gt;'to'</pre>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000020-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000020-source'><span class="ruby-comment cmt"># File lib/alias/manager.rb, line 81</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search</span>(<span class="ruby-identifier">search_hash</span>)&#x000A;      <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">nil</span>&#x000A;      <span class="ruby-identifier">reset_all_aliases</span>&#x000A;      <span class="ruby-identifier">search_hash</span> = {<span class="ruby-identifier">:name=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">search_hash</span>} <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">search_hash</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)&#x000A;      <span class="ruby-identifier">search_hash</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span>&#x000A;        <span class="ruby-identifier">new_result</span> = <span class="ruby-identifier">simple_search</span>(<span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span>)&#x000A;        <span class="ruby-comment cmt">#AND's searches</span>&#x000A;        <span class="ruby-identifier">result</span> = <span class="ruby-identifier">intersection_of_two_arrays</span>(<span class="ruby-identifier">new_result</span>, <span class="ruby-identifier">result</span>)&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-comment cmt">#duplicate results in case they are modified</span>&#x000A;      <span class="ruby-identifier">result</span> = <span class="ruby-identifier">result</span>.<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">dup</span>} <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">result</span>&#x000A;      <span class="ruby-identifier">result</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>

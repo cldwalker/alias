@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>: Alias::Creator [RDoc Documentation]</title>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <link href='../../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='class' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>
+          <span class='type'>Class</span>
+          Alias::Creator
+        </h1>
+        <ol class='paths'>
+          <li>
+            <a href="../../files/lib/alias/creator_rb.html">lib/alias/creator.rb</a>
+          </li>
+        </ol>
+        <div class='parent'>
+          Parent:
+          <strong>Object</strong>
+        </div>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <p>
+            This is the base creator class. To be a valid subclass, the creator must
+            define <a href="Creator.html#M000012">Alias::Creator.map</a> and <a
+            href="Creator.html#M000013">Alias::Creator.generate</a>. Although not
+            required, creators should enforce validation of their aliases with <a
+            href="Creator.html#M000011">Alias::Creator.valid</a>. Also, the creator
+            should be named in the format Alias::Creators::*<a
+            href="Creator.html">Creator</a> where the asterisk stands for any unique
+            string. Since that string is converted to an underscored version when
+            referenced in the console, it&#8217;s recommended to make it camel case.
+            For example, <a
+            href="Creators/InstanceMethodCreator.html">Alias::Creators::InstanceMethodCreator</a>
+            is referenced by it&#8217;s underscored version :instance_method.
+            </p>
+            <p>
+            To better understand how a creator works, here&#8217;s the steps a creator
+            goes through when creating aliases:
+            </p>
+            <ul>
+            <li>map() : Maps the hash from a config file or console input into an array of
+            alias hashes.
+            
+            </li>
+            <li>valid() : Defines a validation that each alias hash must pass.
+            
+            </li>
+            <li>generate() : Given the array of alias hashes, generates the string of ruby
+            code to be evaled for alias creation.
+            
+            </li>
+            </ul>
+          </div>
+          <div id='method-list'>
+            <h2>Methods</h2>
+            <h3>public class</h3>
+            <ol>
+              <li><a href="#M000014">creators</a></li>
+              <li><a href="#M000013">generate</a></li>
+              <li><a href="#M000012">map</a></li>
+              <li><a href="#M000011">valid</a></li>
+            </ol>
+            <h3>public instance</h3>
+            <ol>
+              <li><a href="#M000015">create</a></li>
+              <li><a href="#M000016">delete_invalid_aliases</a></li>
+            </ol>
+          </div>
+          <div id='section'>
+            <div id='class-list'>
+              <h2>Classes and Modules</h2>
+              Class <a href="Creator/AbstractMethodError.html" class="link">Alias::Creator::AbstractMethodError</a><br />
+              Class <a href="Creator/FailedAliasCreationError.html" class="link">Alias::Creator::FailedAliasCreationError</a><br />
+            </div>
+            <div id='attribute-list'>
+              <h2 class='section-bar'>Attributes</h2>
+              <div class='name-list'>
+                <table>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>aliases</td>
+                    <td class='context-item-value'>[RW]</td>
+                    <td class='context-item-desc'>
+                      
+                      Array of alias hashes that have been created.
+                    </td>
+                  </tr>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>force</td>
+                    <td class='context-item-value'>[RW]</td>
+                    <td class='context-item-desc'>
+                      
+                      Same purpose as Alias::Manager.verbose and Alias::Manager.force but unlike
+                      them these only take a boolean.
+                    </td>
+                  </tr>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>verbose</td>
+                    <td class='context-item-value'>[RW]</td>
+                    <td class='context-item-desc'>
+                      
+                      Same purpose as Alias::Manager.verbose and Alias::Manager.force but unlike
+                      them these only take a boolean.
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div id='methods'>
+              <h2>Public class methods</h2>
+              <div class='public-class method' id='method-M000014'>
+                <a name='M000014'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>creators</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Array of all <a href="Creator.html">Creator</a> subclasses.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000014-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000014-source'><span class="ruby-comment cmt"># File lib/alias/creator.rb, line 75</span>&#x000A;      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">creators</span>; <span class="ruby-ivar">@creators</span>; <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-class method' id='method-M000013'>
+                <a name='M000013'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>generate</span>
+                  <span class='arguments'>(&amp;block)</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Takes a block which converts aliases to a string of ruby code to run
+                  through Kernel#eval.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000013-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000013-source'><span class="ruby-comment cmt"># File lib/alias/creator.rb, line 61</span>&#x000A;      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)&#x000A;        <span class="ruby-ivar">@generate</span> = <span class="ruby-identifier">block</span>&#x000A;      <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-class method' id='method-M000012'>
+                <a name='M000012'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>map</span>
+                  <span class='arguments'>(&amp;block)</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Takes a block which converts the creator&#8217;s config to an array of
+                  aliases.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000012-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000012-source'><span class="ruby-comment cmt"># File lib/alias/creator.rb, line 52</span>&#x000A;      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)&#x000A;        <span class="ruby-ivar">@map</span> = <span class="ruby-identifier">block</span>&#x000A;      <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-class method' id='method-M000011'>
+                <a name='M000011'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>valid</span>
+                  <span class='arguments'>(key, options={})</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Creates a validation expectation for the creator by giving it an <a
+                  href="Validator.html">Alias::Validator</a> object aka validator. This
+                  method must be given an :if or :unless option. If the :if option returns
+                  false or :unless option returns true for an alias, the alias is skipped.
+                  </p>
+                  <h4>Options:</h4>
+                  <dl>
+                  <dt>:if</dt><dd>Takes a proc or a symbol referencing a registered validator. This proc must
+                  evaluate to true for the validation to pass. See <a
+                  href="Validator.html#M000008">Alias::Validator.validate</a> for what
+                  arguments this proc receives by default. See <a
+                  href="Validator.html#M000010">Alias::Validator.default_validators</a> for
+                  validators that can be referenced by symbol.
+                  
+                  </dd>
+                  <dt>:unless</dt><dd>Same as :if option but the result is negated.
+                  
+                  </dd>
+                  <dt>:message</dt><dd>A proc to print a message if the creator&#8217;s verbose flag is set.
+                  Receives same arguments as :if and :unless procs. If a previous validator
+                  is referenced in :unless or :if, then their :message is inherited.
+                  
+                  </dd>
+                  <dt>:with</dt><dd>An array of alias attributes/keys which specify the current alias
+                  attributes to pass to the validator procs. Overrides default argument a
+                  validator proc receives.
+                  
+                  </dd>
+                  <dt>:optional</dt><dd>When set to true, this option can be overridden in conjunction with a
+                  creator&#8217;s force flag. Default is false.
+                  
+                  </dd>
+                  </dl>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000011-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000011-source'><span class="ruby-comment cmt"># File lib/alias/creator.rb, line 31</span>&#x000A;      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">valid</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">options</span>={})&#x000A;        <span class="ruby-keyword kw">begin</span>&#x000A;          <span class="ruby-identifier">validators</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-constant">Validator</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">:key=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">:creator=</span><span class="ruby-operator">&gt;</span><span class="ruby-keyword kw">self</span>))&#x000A;        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Validator</span><span class="ruby-operator">::</span><span class="ruby-constant">MissingConditionError</span>&#x000A;          <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;A :unless or :if option is required.&quot;</span>&#x000A;        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Validator</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidValidatorError</span>&#x000A;          <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Validator not set for #{key}&quot;</span>&#x000A;          <span class="ruby-ivar">@validators</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">key</span>)&#x000A;        <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <h2>Public instance methods</h2>
+              <div class='public-instance method' id='method-M000015'>
+                <a name='M000015'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>create</span>
+                  <span class='arguments'>(aliases_hash, pretend=false)</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Main method used to create aliases. Handles mapping, validation and
+                  creation of aliases.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000015-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000015-source'><span class="ruby-comment cmt"># File lib/alias/creator.rb, line 90</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create</span>(<span class="ruby-identifier">aliases_hash</span>, <span class="ruby-identifier">pretend</span>=<span class="ruby-keyword kw">false</span>)&#x000A;      <span class="ruby-identifier">aliases_array</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">maps_config</span>(<span class="ruby-identifier">aliases_hash</span>)&#x000A;      <span class="ruby-identifier">delete_invalid_aliases</span>(<span class="ruby-identifier">aliases_array</span>)&#x000A;      <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">aliases</span> = <span class="ruby-identifier">aliases</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">aliases_array</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">pretend</span>&#x000A;      <span class="ruby-keyword kw">begin</span>&#x000A;        <span class="ruby-comment cmt">#td: create method for efficiently removing constants/methods in any namespace</span>&#x000A;        <span class="ruby-identifier">eval_string</span> = <span class="ruby-constant">Util</span>.<span class="ruby-identifier">silence_warnings</span> { <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">generates_aliases</span>(<span class="ruby-identifier">aliases_array</span>) }&#x000A;        <span class="ruby-identifier">pretend</span> <span class="ruby-value">? </span><span class="ruby-identifier">puts</span>(<span class="ruby-value str">&quot;\n&quot;</span>, <span class="ruby-identifier">eval_string</span>) <span class="ruby-operator">:</span> <span class="ruby-constant">Kernel</span>.<span class="ruby-identifier">eval</span>(<span class="ruby-identifier">eval_string</span>)&#x000A;      <span class="ruby-keyword kw">rescue</span>&#x000A;        <span class="ruby-identifier">raise</span> <span class="ruby-constant">FailedAliasCreationError</span>, <span class="ruby-identifier">$!</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-instance method' id='method-M000016'>
+                <a name='M000016'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>delete_invalid_aliases</span>
+                  <span class='arguments'>(arr)</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Deletes invalid alias hashes that fail defined validators for a creator.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000016-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000016-source'><span class="ruby-comment cmt"># File lib/alias/creator.rb, line 104</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete_invalid_aliases</span>(<span class="ruby-identifier">arr</span>)&#x000A;      <span class="ruby-identifier">arr</span>.<span class="ruby-identifier">delete_if</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">alias_hash</span><span class="ruby-operator">|</span>&#x000A;        <span class="ruby-operator">!</span><span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">validators</span>.<span class="ruby-identifier">all?</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">validator</span><span class="ruby-operator">|</span>&#x000A;          <span class="ruby-identifier">validator</span>.<span class="ruby-identifier">validate</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">alias_hash</span>, <span class="ruby-identifier">attribute</span>)&#x000A;        }&#x000A;      }&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>

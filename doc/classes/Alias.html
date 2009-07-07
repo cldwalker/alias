@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>: Alias [RDoc Documentation]</title>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <link href='../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='class' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>
+          <span class='type'>Module</span>
+          Alias
+        </h1>
+        <ol class='paths'>
+          <li>
+            <a href="../files/lib/alias/console_rb.html">lib/alias/console.rb</a>
+          </li>
+          <li class='other'>
+            <a href="../files/lib/alias/creator_rb.html">lib/alias/creator.rb</a>
+          </li>
+          <li class='other'>
+            <a href="../files/lib/alias/manager_rb.html">lib/alias/manager.rb</a>
+          </li>
+          <li class='other'>
+            <a href="../files/lib/alias/util_rb.html">lib/alias/util.rb</a>
+          </li>
+          <li class='other'>
+            <a href="../files/lib/alias/validator_rb.html">lib/alias/validator.rb</a>
+          </li>
+          <li class='other'>
+            <a href="../files/lib/alias_rb.html">lib/alias.rb</a>
+          </li>
+          <li>
+            <a class='show' href='#' onclick='this.parentNode.parentNode.className += " expanded"; this.parentNode.removeChild(this); return false'>show all</a>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <p>
+            Most of the core <a href="Alias.html">Alias</a> actions are run through <a
+            href="Alias/Manager.html">Alias::Manager</a> except for <a
+            href="Alias.html#M000001">Alias.create</a>. See <a
+            href="Alias/Manager.html">Alias::Manager</a> for an explanation of how
+            aliases are created.
+            </p>
+          </div>
+          <div id='method-list'>
+            <h2>Methods</h2>
+            <h3>public instance</h3>
+            <ol>
+              <li><a href="#M000002">config_file</a></li>
+              <li><a href="#M000001">create</a></li>
+              <li><a href="#M000003">manager</a></li>
+            </ol>
+          </div>
+          <div id='section'>
+            <div id='class-list'>
+              <h2>Classes and Modules</h2>
+              Module <a href="Alias/Console.html" class="link">Alias::Console</a><br />
+              Class <a href="Alias/Creator.html" class="link">Alias::Creator</a><br />
+              Class <a href="Alias/Creators.html" class="link">Alias::Creators</a><br />
+              Class <a href="Alias/Manager.html" class="link">Alias::Manager</a><br />
+              Class <a href="Alias/Validator.html" class="link">Alias::Validator</a><br />
+            </div>
+            <div id='methods'>
+              <h2>Public instance methods</h2>
+              <div class='public-instance method' id='method-M000002'>
+                <a name='M000002'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>config_file</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  By default, looks for existing files in config/alias.yml and then
+                  ~/.alias.yml. A config file has the following keys:
+                  </p>
+                  <dl>
+                  <dt>:aliases</dt><dd>This takes a hash mapping creators to their config hashes. Valid creators
+                  are :instance_method, :class_method, :constant, :class_to_instance_method
+                  and :any_to_instance_method.
+                  
+                  </dd>
+                  <dt>:verbose</dt><dd>Sets whether creators are verbose with boolean or array of creator symbols.
+                  A boolean sets verbosity for all creators whereas the array specifies which
+                  creators. Default is false.
+                  
+                  </dd>
+                  <dt>:force</dt><dd>Sets whether creators force optional validations with boolean or array of
+                  creator symbols. Works the same as :verbose. Default is false.
+                  
+                  </dd>
+                  </dl>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000002-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000002-source'><span class="ruby-comment cmt"># File lib/alias.rb, line 46</span>&#x000A;  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">config_file</span>&#x000A;    <span class="ruby-ivar">@config_file</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-value str">&quot;config/alias.yml&quot;</span>) <span class="ruby-operator">?</span> <span class="ruby-value str">'config/alias.yml'</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot;#{ENV['HOME']}/.alias.yml&quot;</span>&#x000A;  <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-instance method' id='method-M000001'>
+                <a name='M000001'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>create</span>
+                  <span class='arguments'>(options={})</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Creates aliases from <a href="Alias.html#M000002">Alias.config_file</a> if
+                  it exists and merges them with any explicit aliases. This method takes the
+                  same keys used by config files (see <a
+                  href="Alias.html#M000002">Alias.config_file</a>) and also the following
+                  options:
+                  </p>
+                  <ul>
+                  <li>:file : Specifies a config file to override <a
+                  href="Alias.html#M000002">Alias.config_file</a>. If set to false, no config
+                  file is loaded.
+                  
+                  </li>
+                  </ul>
+                  <p>
+                  Examples:
+                  </p>
+                  <pre># Loads any default files and the ones in :aliases.&#x000A;# Sets global verbosity for creators.&#x000A;create :aliases=&gt;{:constant=&gt;{&quot;Array&quot;=&gt;&quot;A&quot;}}, :verbose=&gt;true&#x000A;# Loads the given file and sets verbosity just for the :instance_method creator.&#x000A;create :file=&gt;&quot;some file&quot;, :verbose=&gt;[:instance_method]</pre>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000001-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000001-source'><span class="ruby-comment cmt"># File lib/alias.rb, line 29</span>&#x000A;  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create</span>(<span class="ruby-identifier">options</span>={})&#x000A;    <span class="ruby-identifier">file_config</span> = <span class="ruby-identifier">load_config_file</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:file</span>))&#x000A;    <span class="ruby-identifier">new_config</span> = <span class="ruby-constant">Util</span>.<span class="ruby-identifier">recursive_hash_merge</span>(<span class="ruby-identifier">file_config</span>, <span class="ruby-identifier">options</span>)&#x000A;    <span class="ruby-identifier">manager</span>.<span class="ruby-identifier">verbose</span> = <span class="ruby-identifier">new_config</span>[<span class="ruby-identifier">:verbose</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">new_config</span>[<span class="ruby-identifier">:verbose</span>]&#x000A;    <span class="ruby-identifier">manager</span>.<span class="ruby-identifier">force</span> = <span class="ruby-identifier">new_config</span>[<span class="ruby-identifier">:force</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">new_config</span>[<span class="ruby-identifier">:force</span>]&#x000A;    (<span class="ruby-identifier">new_config</span>[<span class="ruby-identifier">:aliases</span>] <span class="ruby-operator">||</span> {}).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">creator_type</span>, <span class="ruby-identifier">aliases</span><span class="ruby-operator">|</span>&#x000A;      <span class="ruby-identifier">manager</span>.<span class="ruby-identifier">create_aliases</span>(<span class="ruby-identifier">creator_type</span>, <span class="ruby-identifier">aliases</span>)&#x000A;    <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-ivar">@config</span> = <span class="ruby-constant">Util</span>.<span class="ruby-identifier">recursive_hash_merge</span>(<span class="ruby-identifier">config</span>, <span class="ruby-identifier">new_config</span>)&#x000A;  <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='public-instance method' id='method-M000003'>
+                <a name='M000003'>      </a>
+                <div class='synopsis'>
+                  <span class='name'>manager</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Contains primary <a href="Alias/Manager.html">Alias::Manager</a> object
+                  which is used throughout <a href="Alias.html">Alias</a>.
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000003-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000003-source'><span class="ruby-comment cmt"># File lib/alias.rb, line 51</span>&#x000A;  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">manager</span>&#x000A;    <span class="ruby-ivar">@manager</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Manager</span>.<span class="ruby-identifier">new</span>&#x000A;  <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>

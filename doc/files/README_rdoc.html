@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>File: README.rdoc [RDoc Documentation]</title>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <link href='../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='file' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>README.rdoc</h1>
+        <div class='paths'>
+          README.rdoc
+        </div>
+        <div class='last-update'>
+          Last Update:
+          <span class='datetime'>Tue Jul 07 06:11:04 -0400 2009</span>
+        </div>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <h2>Description</h2>
+            <p>
+            Creates aliases for class methods, instance methods, constants, delegated
+            methods and more. Aliases can be easily searched or saved as YAML config
+            files to load later. Custom alias types are easy to create with the DSL <a
+            href="../classes/Alias.html">Alias</a> provides. Although <a
+            href="../classes/Alias.html">Alias</a> was created with the irb user in
+            mind, any Ruby console program can hook into <a
+            href="../classes/Alias.html">Alias</a> for creating configurable aliases.
+            </p>
+            <h2>Setup</h2>
+            <p>
+            Install the gem with:
+            </p>
+            <pre>sudo gem install cldwalker-alias -s http://gems.github.com</pre>
+            <p>
+            To setup, simply drop these two lines in your .irbrc:
+            </p>
+            <pre>require 'alias'&#x000A;Alias.create</pre>
+            <p>
+            This will assume a file in config/alias.yml or ~/.alias.yml. If you want it
+            somewhere else, pass a :file option to create():
+            </p>
+            <pre>Alias.create :file=&gt;&quot;/path/to/my/clandestine_aliases.yml&quot;</pre>
+            <p>
+            If you&#8217;d like to define your aliases without a config file, pass <a
+            href="../classes/Alias.html#M000001">Alias.create()</a> an :aliases option:
+            </p>
+            <pre>Alias.create :verbose=&gt;true, :aliases=&gt;{&#x000A;  :constant=&gt;{'Array' = 'A'},&#x000A;  :instance_method=&gt;{'String'=&gt;{'downcase'=&gt;'dc' }, 'Array'=&gt;{'select'=&gt;'s'}}&#x000A;}</pre>
+            <h2>Usage</h2>
+            <p>
+            An example within Rails&#8217; script/console:
+            </p>
+            <pre>bash&gt; script/console&#x000A;&gt;&gt; require 'alias'&#x000A;=&gt; true&#x000A;&#x000A;# Import alias methods&#x000A;&gt;&gt; extend Alias::Console&#x000A;=&gt; main&#x000A;&#x000A;# First let's see what ruby code Alias generates to create an alias.&#x000A;&gt;&gt; create_aliases :class_method, {&quot;ActiveRecord::Base&quot;=&gt;{'find'=&gt;'[]'}}, :pretend=&gt;true&#x000A;&#x000A;class ::ActiveRecord::Base; class&lt;&lt; self; alias_method :[], :find; end; end&#x000A;=&gt; true&#x000A;&#x000A;# Create the above class method alias&#x000A;&gt;&gt; create_aliases :class_method, &quot;ActiveRecord::Base&quot;=&gt;{'find'=&gt;'[]'}&#x000A;=&gt; true&#x000A;&#x000A;# Create the above constant alias&#x000A;&gt;&gt; create_aliases :constant, &quot;ActiveRecord::Base&quot;=&gt;&quot;AB&quot;&#x000A;=&gt; true&#x000A;# Verify that it worked&#x000A;&gt;&gt; AB&#x000A;=&gt; ActiveRecord::Base&#x000A;&#x000A;# If we try to create the constant alias again, Alias prevents us and warns us&#x000A;&gt;&gt; create_aliases :constant, &quot;ActiveRecord::Base&quot;=&gt;&quot;AB&quot;&#x000A;Constant 'AB' not created since it already exists&#x000A;=&gt; false&#x000A;# We can force Alias to override a method, class or constant that already exists&#x000A;&gt;&gt; create_aliases :constant, {&quot;ActiveRecord::Base&quot;=&gt;&quot;AB&quot;}, :force=&gt;true&#x000A;=&gt; true&#x000A;&#x000A;# Create the above instance method alias&#x000A;&gt;&gt; create_aliases :instance_method, &quot;ActiveRecord::Base&quot;=&gt;{&quot;update_attribute&quot;=&gt;'ua'}&#x000A;=&gt; true&#x000A;&#x000A;# By default aliases are saved to config/alias.yml in rails or ~/.alias.yml if not.&#x000A;&gt;&gt; save_aliases&#x000A;Saved created aliases to config/alias.yml.&#x000A;=&gt; true</pre>
+            <h2>Configuration</h2>
+            <p>
+            For an example config file see test/aliases.yml. For an explanation of the
+            config file format see <a
+            href="../classes/Alias.html#M000002">Alias.config_file</a>.
+            </p>
+            <h2>Creating Custom <a href="../classes/Alias.html">Alias</a> Types</h2>
+            <p>
+            See <a href="../classes/Alias/Creator.html">Alias::Creator</a>.
+            </p>
+            <h2>Todo</h2>
+            <ul>
+            <li>Allow loading of select aliases in a file.
+            
+            </li>
+            <li>Provide a way to autogenerate aliases with a given proc.
+            
+            </li>
+            </ul>
+          </div>
+          <div id='section'>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>
