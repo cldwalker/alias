@@ -16,7 +16,7 @@ class Alias::ManagerTest < Test::Unit::TestCase
 
       test "doesn't create aliases with pretend option" do
         Kernel.expects(:eval).never
-        capture_stdout { create_aliases :pretend=>true }.should == " \n"
+        capture_stdout { create_aliases :pretend=>true }.should == "\n \n"
       end
 
       test "with manager's verbose sets creator's verbose" do

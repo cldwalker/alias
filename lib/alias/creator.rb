@@ -80,7 +80,7 @@ module Alias
       begin
         #td: create method for efficiently removing constants/methods in any namespace
         eval_string = Util.silence_warnings { self.class.generates_aliases(aliases_array) }
-        pretend ? puts(eval_string) : Kernel.eval(eval_string)
+        pretend ? puts("\n", eval_string) : Kernel.eval(eval_string)
       rescue
         raise FailedAliasCreationError, $!
       end
