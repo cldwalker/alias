@@ -9,7 +9,7 @@ console program can hook into Alias for creating configurable aliases.
 
 Install the gem with:
 
-    sudo gem install cldwalker-alias -s http://gems.github.com
+    sudo gem install cldwalker-alias --source http://gems.github.com
 
 To setup, simply drop these two lines in your .irbrc:
 
