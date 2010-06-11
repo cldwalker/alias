@@ -9,6 +9,7 @@ require 'alias/creators/class_to_instance_method_creator'
 require 'alias/creators/any_to_instance_method_creator'
 require 'alias/util'
 require 'alias/console'
+require 'alias/version'
 
 # Most of the core Alias actions are run through Alias::Manager except for Alias.create. 
 # See Alias::Manager for an explanation of how aliases are created.
