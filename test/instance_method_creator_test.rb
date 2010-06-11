@@ -17,13 +17,13 @@ describe "InstanceMethodCreator" do
   end
 
   it "deletes invalid classes" do
-    expect_aliases "String"=>{'strip','st'}
-    create_aliases "String"=>{'strip','st'}, 'Blah'=>{'map'=>'m'}
+    expect_aliases "String"=>{'strip'=>'st'}
+    create_aliases "String"=>{'strip'=>'st'}, 'Blah'=>{'map'=>'m'}
   end
 
   it "deletes invalid instance method keys" do
     expect_aliases "Array"=>{}, "String"=>{"strip"=>"st"}
-    create_aliases 'String'=>{'strip'=>'st'},'Array'=>{'blah', 'bl'}
+    create_aliases 'String'=>{'strip'=>'st'},'Array'=>{'blah'=>'bl'}
   end
 
   it "creates aliases" do

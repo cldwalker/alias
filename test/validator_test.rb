@@ -64,7 +64,7 @@ describe "Validator" do
   end
 
   it "without :optional option cannot be forced" do
-    create_validator :if=>lambda { false }
+    create_validator :if=>lambda {|e| false }
     validate(:force=>true).should == false
   end
 end
