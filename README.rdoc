@@ -9,7 +9,7 @@ console program can hook into Alias for creating configurable aliases.
 
 Install the gem with:
 
-    sudo gem install cldwalker-alias --source http://gems.github.com
+    sudo gem install alias
 
 To setup, simply drop these two lines in your .irbrc:
 
@@ -87,5 +87,6 @@ See Alias::Creator.
 * http://tagaholic.me/2009/07/07/alias-quickness-in-the-ruby-console.html
 
 ==  Todo
+* Fix tests
 * Allow loading of select aliases in a file.
 * Provide a way to autogenerate aliases with a given proc.
