@@ -12,12 +12,12 @@ describe "AnyToInstanceMethodCreator" do
     @manager.create_aliases(:any_to_instance_method, hash)
   end
 
-  test "deletes invalid classes" do
+  xtest "deletes invalid classes" do
     expect_aliases 'String'=>{'String.to_s'=>'s'}
     create_aliases 'String'=>{'String.to_s'=>'s'}, 'AnotherString'=>{'String.to_s'=>'s'}
   end
 
-  test "deletes existing method aliases" do
+  xtest "deletes existing method aliases" do
     expect_aliases 'String'=>{'Date.commercial'=>'s'}
     create_aliases 'String'=>{'Date.civil'=>'strip', 'Date.commercial'=>'s'}
   end
