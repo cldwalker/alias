@@ -1,6 +1,5 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-module Alias
 describe "Util" do
   it "any_const_get fetches simple class" do
     Util.any_const_get("Array").should == Array
@@ -38,5 +37,4 @@ describe "Util" do
     expected_hash = {"Yo"=>"Y", "Man"=>"M", "Cool"=>"C", 'Yay'=>'Ya'}
     Util.make_shortest_aliases(['Yo','Yay','Cool','Man']).should == expected_hash
   end
-end
 end

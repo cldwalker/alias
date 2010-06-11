@@ -1,15 +1,15 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 describe "AliasConstantCreator" do
-  before { @manager = Alias::Manager.new }
+  before { @manager = Manager.new }
 
   def create_aliases(hash, options={})
     @manager.create_aliases(:constant, hash, options)
   end
 
   def expect_aliases(hash)
-    arr = Alias::Creators::ConstantCreator.maps_config(hash)
-    Alias::Creators::ConstantCreator.expects(:generates_aliases).with(arr).returns('')
+    arr = Creators::ConstantCreator.maps_config(hash)
+    Creators::ConstantCreator.expects(:generates_aliases).with(arr).returns('')
   end
   
   it "deletes existing aliases" do

@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 describe "Validator" do
   before_all { eval "class ::TestCreator < Alias::Creator; end"}
-  before { Alias::Validator.instance_eval "@validators = {}"}
+  before { Validator.instance_eval "@validators = {}"}
 
   def validate(options={})
     creator = TestCreator.new
@@ -19,8 +19,8 @@ describe "Validator" do
   end
 
   def create_parent_validator(key)
-    Alias::Validator.register_validators [{:key=>key, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}}]
-    @parent_validator = Alias::Validator.validators[key]
+    Validator.register_validators [{:key=>key, :if=>lambda {|e| 'yo'}, :message=>lambda {|e| 'cool'}}]
+    @parent_validator = Validator.validators[key]
   end
 
   it "copies a validator when using a previous one" do

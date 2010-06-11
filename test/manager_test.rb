@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
 describe "Manager" do
   before { @manager = nil }
-  def manager; @manager ||= Alias::Manager.new; end
+  def manager; @manager ||= Manager.new; end
 
   describe "create_aliases" do
     before_all { eval %[class Alias::Creators::ValidTestCreator < Alias::Creator; map { [] }; generate { ' '};  end]}
@@ -83,7 +83,7 @@ describe "Manager" do
 
   describe "search" do
     before {
-      manager.instance_variable_set "@creators", {:constant=>Alias::Creators::ConstantCreator.new}
+      manager.instance_variable_set "@creators", {:constant=>Creators::ConstantCreator.new}
       manager.stubs(:all_aliases).returns([{:name=>'Array', :alias=>'A'}, {:name=>'Abbrev', :alias=>'B'}])
     }
 

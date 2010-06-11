@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), 'test_helper.rb')
 describe "Console" do
   before { @console = nil }
   def console
-    console ||= Object.new.extend(Alias::Console)
+    console ||= Object.new.extend(Console)
   end
 
   it "create_aliases doesn't save failed alias creation" do

@@ -2,6 +2,7 @@ require 'bacon'
 require 'mocha'
 require 'mocha-on-bacon'
 require 'alias'
+include Alias
 
 class Bacon::Context
   def before_all; yield; end

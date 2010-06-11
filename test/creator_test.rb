@@ -1,6 +1,5 @@
 require File.join(File.dirname(__FILE__), 'test_helper.rb')
 
-module Alias
 describe "invalid creator" do
   before_all { eval "class Alias::TestCreator < Alias::Creator; end"}
   it "raises AbstractMethodError if map not defined" do
@@ -23,5 +22,4 @@ describe "invalid creator" do
     capture_stderr { TestCreator.valid(:name, :if=>:blah) }.should =~ /not set/
     TestCreator.validators[:name].should == nil
   end
-end
 end
