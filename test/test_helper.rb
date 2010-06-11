@@ -1,11 +1,12 @@
 require 'rubygems'
-require 'test/unit'
-require 'context' #gem install jeremymcanally-context -s http://gems.github.com
-require 'mocha' #gem install mocha
-require 'matchy' #gem install jeremymcanally-matchy -s http://gems.github.com
+require 'bacon'
+require 'mocha'
+require 'mocha-on-bacon'
 require 'alias'
 
-class Test::Unit::TestCase
+class Bacon::Context
+  alias_method :test, :it
+  def before_all; yield; end
   def capture_stdout(&block)
     original_stdout = $stdout
     $stdout = fake = StringIO.new
