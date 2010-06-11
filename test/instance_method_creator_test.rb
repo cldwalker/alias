@@ -11,22 +11,22 @@ describe "InstanceMethodCreator" do
     @manager.create_aliases(:instance_method, hash)
   end
   
-  test "deletes existing instance method aliases" do
+  it "deletes existing instance method aliases" do
     expect_aliases "String"=>{"strip"=>"st"}
     create_aliases 'String'=>{'strip'=>'st', 'chomp'=>'chop'}
   end
 
-  test "deletes invalid classes" do
+  it "deletes invalid classes" do
     expect_aliases "String"=>{'strip','st'}
     create_aliases "String"=>{'strip','st'}, 'Blah'=>{'map'=>'m'}
   end
 
-  test "deletes invalid instance method keys" do
+  it "deletes invalid instance method keys" do
     expect_aliases "Array"=>{}, "String"=>{"strip"=>"st"}
     create_aliases 'String'=>{'strip'=>'st'},'Array'=>{'blah', 'bl'}
   end
 
-  test "creates aliases" do
+  it "creates aliases" do
     Kernel.eval %[
       class ::SampleClass
         def whoop; 'WHOOP'; end

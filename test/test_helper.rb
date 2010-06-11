@@ -4,9 +4,8 @@ require 'mocha-on-bacon'
 require 'alias'
 
 class Bacon::Context
-  alias_method :test, :it
   def before_all; yield; end
-  def xtest(*args); end
+  def xit(*args); end
   def capture_stdout(&block)
     original_stdout = $stdout
     $stdout = fake = StringIO.new

@@ -12,17 +12,17 @@ describe "AnyToInstanceMethodCreator" do
     @manager.create_aliases(:any_to_instance_method, hash)
   end
 
-  xtest "deletes invalid classes" do
+  xit "deletes invalid classes" do
     expect_aliases 'String'=>{'String.to_s'=>'s'}
     create_aliases 'String'=>{'String.to_s'=>'s'}, 'AnotherString'=>{'String.to_s'=>'s'}
   end
 
-  xtest "deletes existing method aliases" do
+  xit "deletes existing method aliases" do
     expect_aliases 'String'=>{'Date.commercial'=>'s'}
     create_aliases 'String'=>{'Date.civil'=>'strip', 'Date.commercial'=>'s'}
   end
 
-  test "creates aliases" do
+  it "creates aliases" do
     Kernel.eval %[
       class ::SomeClass
         def self.cap; 'itup'; end

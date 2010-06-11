@@ -11,22 +11,22 @@ describe "ClassMethodCreator" do
     @manager.create_aliases(:class_method, hash)
   end
   
-  test "deletes invalid class method keys" do
+  it "deletes invalid class method keys" do
     expect_aliases "Array"=>{}, "String"=>{'yaml_new'=>'yn'}
     create_aliases 'String'=>{'yaml_new'=>'yn'},'Array'=>{'blah'=>'bl'}
   end
 
-  test "deletes invalid classes" do
+  it "deletes invalid classes" do
     expect_aliases "String"=>{'yaml_new'=>'yn'}
     create_aliases 'String'=>{'yaml_new'=>'yn'},'Blah'=>{'new'=>'n'}
   end
 
-  test "deletes existing class method aliases" do
+  it "deletes existing class method aliases" do
     expect_aliases 'Date'=>{'valid_time?'=>'vt'}
     create_aliases 'Date'=>{'civil_to_jd'=>'civil', 'valid_time?'=>'vt'}
   end
 
-  test "creates class method aliases" do
+  it "creates class method aliases" do
     Kernel.eval %[
       class ::SampleClass
         def self.cap; 'itup'; end

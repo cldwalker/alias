@@ -12,27 +12,27 @@ describe "ClassToInstanceMethodCreator" do
     @manager.create_aliases(:class_to_instance_method, hash)
   end
 
-  xtest "deletes invalid to classes" do
+  xit "deletes invalid to classes" do
     expect_aliases 'String'=>{'String.to_s'=>'s'}
     create_aliases 'String'=>{'AnotherString.name'=>'n', 'String.to_s'=>'s'}
   end
 
-  xtest "deletes invalid classes" do
+  xit "deletes invalid classes" do
     expect_aliases 'String'=>{'String.to_s'=>'s'}
     create_aliases 'String'=>{'String.to_s'=>'s'}, 'AnotherString'=>{'String.to_s'=>'s'}
   end
 
-  xtest "deletes existing method aliases" do
+  xit "deletes existing method aliases" do
     expect_aliases 'String'=>{'Date.commercial'=>'s'}
     create_aliases 'String'=>{'Date.civil'=>'strip', 'Date.commercial'=>'s'}
   end
 
-  test "deletes invalid to methods" do
+  it "deletes invalid to methods" do
     expect_aliases 'String'=>{'Date.civil'=>'c'}
     create_aliases 'String'=>{'Date.civil'=>'c', 'Date.uncivil'=>'uc'}
   end
 
-  test "creates aliases" do
+  it "creates aliases" do
     Kernel.eval %[
       class ::SampleClass
         def self.cap; 'itup'; end
